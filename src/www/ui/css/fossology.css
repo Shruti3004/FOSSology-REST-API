@@ -1,0 +1,360 @@
+/***********************************************************
+ Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
+ Copyright (C) 2015-2018 Siemens AG
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ version 2 as published by the Free Software Foundation.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+***********************************************************/
+
+.text
+{
+  font:normal 10pt verdana, arial, helvetica;
+}
+
+.mono
+{
+  font:normal 10pt monospace;
+}
+
+.dir
+{
+  height:24px;
+  font:normal 10pt verdana, arial, helvetica;
+  border: thin black;
+  border-style: none none dotted none;
+}
+
+table { border-spacing:0; }
+
+th { background:lightsteelblue; }
+
+a, a:visited, a:link
+{
+  text-decoration:none;
+  color:blue;
+}
+a:active, a:hover
+{
+  color:red;
+}
+
+div
+{
+  padding:0;
+  margin:0;
+}
+
+table
+{
+  height:24px;
+  font:normal 10pt verdana, arial, helvetica;
+}
+
+/* For tree views */
+.treeheader
+{
+  font:normal 8pt verdana, arial, helvetica;
+}
+
+.highlight
+{
+  background-color: #4bfe78;
+}
+
+.buttonLink {
+  float: left;
+  color: #666;
+  font-size:14px;
+  line-height:24px;
+  font-weight: normal;
+  text-align: center;
+  border: 1px solid #BBB;
+  min-width: 14px;
+  padding: 0 7px;
+  margin: 0 5px 0 0;
+  cursor: pointer;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  background: #efefef; /* Old browsers */
+  background: -moz-linear-gradient(top, #ffffff 0%, #efefef 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#efefef)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #ffffff 0%,#efefef 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #ffffff 0%,#efefef 100%); /* Opera11.10+ */
+  background: -ms-linear-gradient(top, #ffffff 0%,#efefef 100%); /* IE10+ */
+  background: linear-gradient(to top, #ffffff, #efefef); /* W3C */
+  position: relative;
+}
+
+.buttonLink:active {
+  top: 1px;
+  left: 1px;
+}
+/* Fun bug: When using the DTD, you need to define html and body
+   to be 100% AND div must be used.  Otherwise, iframe becomes
+   a default/fixed height. */
+html, body
+{
+  margin:0;
+  padding-right: .25em;
+  padding-left: .25em;
+  /*padding:.25em;*/
+  height:100%;
+  background-color:white;
+}
+
+.semibordered
+{
+  border:1px solid black;
+  border-collapse:collapse;
+}
+
+.semibordered td, .semibordered th
+{
+  border-left: 1px dashed #222233;
+}
+
+.simpleTable {
+  border:1px solid black;
+  border-collapse:collapse;
+}
+
+.simpleTable td, .simpleTable th {
+  border: 1px solid #222233;
+}
+
+.simpleTable .odd  { background-color: #E2E4FF; }
+.simpleTable .even { background-color: white; }
+
+.inactiveClearing
+{
+  background-color: #bebebe;
+}
+
+.modal {
+  padding: 20px 40px;
+  color: #000000;
+  background-color: #E6E6E6;
+  border-radius: 10px;
+  display: none;
+  box-sizing: border-box;
+  max-height: 70vh;
+  min-height: 20vh;
+  max-width: 70vw;
+  min-width: 20vw;
+}
+
+.icon-small {
+  width: 16px;
+  height: 16px;
+}
+
+.centered {
+  text-align: center;
+}
+
+.boxnew {
+  background-color: #ffffff;
+  border: 5px solid #f2f2f2;
+  float: left;
+  height: 700px;
+  overflow: auto;
+  padding: 0px;
+  position: relative;
+  text-align: left;
+  width: 99%;
+}
+
+.groupBox {
+  clear: both;
+  margin-top: 20px;
+  position: relative;
+  top: -20px;
+  padding: 10px;
+}
+
+.headerNew {
+  vertical-align: top;
+  overflow: auto;
+}
+
+.headerBox {
+  width: 99%;
+  background-color: #ffffff;
+  float: right;
+  height: 700px;
+  overflow: auto;
+  padding-left: 1px;
+  text-align: left;
+}
+
+.selectedRow {
+  font-weight: bold;
+}
+
+img.delete, img.add, img.deleted, img.added {
+  background-size: 100% 100%;
+  height: 16px;
+  width: 16px;
+  margin: 0 auto;
+}
+
+img.add, img.delete {
+  cursor: pointer;
+}
+
+img.add {
+  background-image: url('../images/icons/add_16.png');
+}
+
+img.delete {
+  background-image: url('../images/icons/close_16.png');
+}
+
+img.added {
+  background-image: url('../images/icons/added_16.png');
+}
+
+img.deleted {
+  background-image: url('../images/icons/closed_16.png');
+}
+
+.inactive {
+  color: gray;
+}
+
+.activeEditText textarea{
+  min-width: 7em;
+  min-height: 5em;
+}
+
+.info-bullet {
+  vertical-align: middle;
+  margin-left: 3px;
+  width: 11px;
+}
+.nobreaktext {
+  white-space: nowrap;
+}
+
+.browse-upload-checkbox {
+  vertical-align: bottom;
+  margin:0px;
+}
+
+.ui-button-text .browse-upload-all-off {
+  color: black;
+  font-weight: normal;
+}
+.ui-button-text .browse-upload-all-on {
+  color: black;
+  font-weight: bold;
+}
+
+.decTypeWip {
+  border-color: red;
+  border-width: 5px;
+}
+
+tr.classic {
+  border:1px solid black;
+  text-align:left;
+  background:lightyellow;
+}
+
+#toFolder {
+  width: 100%;
+}
+
+#folder_select {
+  width: 25%;
+}
+
+td.dashboard {
+  vertical-align: top;
+  padding-right: 10%;
+}
+
+table.infoTable {
+  max-width: 50%;
+}
+
+div.infoTable {
+  height: 100px;
+  overflow-y: scroll;
+}
+
+#databaseTable {
+  width: 100%;
+}
+
+.candidateFileList{
+  height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.riskLevelBox {
+  height: 25px;
+  width: 25px;
+  padding: 0 4px;
+  font-weight: bold;
+  line-height: 25px;
+  text-align: center;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.riskLevelBackgroud0 {
+  background: #ffffff;
+}
+
+.riskLevelBackgroud1 {
+  background: #87cfff;
+}
+
+.riskLevelBackgroud2 {
+  background: #00d10d;
+}
+
+.riskLevelBackgroud3 {
+  background: #f2e600;
+}
+
+.riskLevelBackgroud4 {
+  background: #f17d00
+}
+
+.riskLevelBackgroud5 {
+  background: #e95850;
+}
+
+.passPolicy {
+  font-size: .9em;
+  color: #FF666C;
+}
+
+.passFail {
+  box-shadow: 0 0 6px #FF2F4D;
+  margin: 4px;
+}
+
+.passPass {
+  box-shadow: 0 0 6px #2EFF57;
+  margin: 4px;
+}
+
+#passcheck, #pass2 {
+  margin: 4px;
+}

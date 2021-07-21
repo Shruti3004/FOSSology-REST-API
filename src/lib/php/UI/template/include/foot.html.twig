@@ -1,0 +1,30 @@
+{# Copyright 2014-2018 Siemens AG
+
+   Copying and distribution of this file, with or without modification,
+   are permitted in any medium without royalty provided the copyright notice and this notice are preserved.
+   This file is offered as-is, without any warranty.
+#}
+<script src="scripts/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="scripts/jquery-ui.js" type="text/javascript"></script>
+<script src="scripts/select2.full.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  function renderSelect2() {
+    if(!$('.ui-render-select2').attr("size") > 0) {
+      $('.ui-render-select2').each(function() {
+        var dropdownParent = $(document.body);
+        if ($(this).parents('.modal').length !== 0) {
+          dropdownParent = $(this).parents('.modal');
+        }
+        $(this).select2({
+          width: 'style',
+          dropdownAutoWidth : true,
+          dropdownParent: dropdownParent
+        });
+      });
+    }
+  }
+  $(document).ready(function() {
+    renderSelect2();
+  });
+</script>
+{{ scripts }}

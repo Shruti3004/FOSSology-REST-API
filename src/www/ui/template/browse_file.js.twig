@@ -1,0 +1,102 @@
+{# Copyright 2015-2017 Siemens AG
+
+   Copying and distribution of this file, with or without modification,
+   are permitted in any medium without royalty provided the copyright notice and this notice are preserved.
+   This file is offered as-is, without any warranty.
+#}
+
+function createDirlistTable() {
+  var dirlistTableConfig = {
+    "bServerSide": true,
+    "sAjaxSource": "?mod=ajax_explorer",
+    "fnServerData": function (sSource, aoData, fnCallback) {
+      aoData.push({"name": "upload", "value": {{ uploadId }} });
+      aoData.push({"name": "item", "value": {{ itemId }} });
+      aoData.push({"name": "totalRecords", "value": {{ iTotalRecords }} });
+      aoData.push({"name": "agentId", "value": {{ agentId|default(0) }} });
+      aoData.push({"name": "scanFilter", "value": $('#scanFilter').val() });
+      aoData.push({"name": "conFilter", "value": $('#conFilter').val() });
+      aoData.push({"name": "openCBoxFilter", "value": $('#openCBoxFilter').prop('checked')});
+      {% if isFlat %}aoData.push({"name": "flatten", "value": "yes" });{% endif %}
+      $.getJSON(sSource, aoData, fnCallback)
+        .fail(failed)
+    },
+    "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        if (nRow.className.match(/(^| )removed($| )/g)  ) {
+            $('td', nRow).addClass('read_only');
+        }
+    },
+    "aoColumns": [{"sTitle":"Files","sClass":"left"},
+        {"sTitle":"Scanner Results&nbsp;{{ agent_list }}","sClass":"left","bSortable":false},
+        {"sTitle":"Edited Results","sClass":"left","bSortable":false},
+        {"sTitle":"Clearing Status","sClass":"clearingStatus center","bSortable":false,"bSearchable":false,"sWidth":"5%","mRender":function ( data, type, full ) {
+            if(type!='display') return data;
+            switch (data){
+              case 'green':
+                return '<img alt="done" src="images/green.png" class="icon-small"/>';
+              case 'yellow':
+                return '<img alt="done" src="images/yellow.png" class="icon-small"/>';
+              case 'redGreen':
+                return '<img alt="done" src="images/redGreen.png" class="icon-small"/>';
+              case 'grey':
+                return '<img alt="done" src="images/grey.png" class="icon-small"/>';
+              default:
+                return '<img alt="not done" src="images/red.png" class="icon-small"/>';
+            }
+          }
+        },
+        {"sTitle":"Cleared / Open / Total","sClass":"center","bSortable":false,"bSearchable":false},
+        {"sTitle":"Actions <input type='checkbox' id='selectMarkIrrelevant'>","sClass":"left","bSortable":false,"bSearchable":false,"sWidth":"13.6%"}],
+    "sPaginationType": "listbox",
+    "bProcessing": true,
+    "bStateSave": true,
+    "bRetrieve": true,
+    "bPaginate": true,
+    "bFilter": true,
+    "bAutoWidth": true,
+    "iDisplayLength":50,
+    "fnDrawCallback": function() {
+      renderSelect2();
+    },
+    "oLanguage":{"sInfo":"Showing _START_ to _END_ of _TOTAL_ files" ,
+      "sSearch":'_INPUT_<button onclick="clearSearchFiles();" title=\"{{ 'Clear file filter'|trans }}\" >Clear<\/button>',
+      "sLengthMenu":'Display <select><option value="10">10<\/option><option value="25">25<\/option><option value="50">50<\/option><option value="100">100<\/option><\/select> {#
+       #}   {{ 'files'|trans }} ({% if isFlat %}<a href="{{ fileSwitch }}">{{ 'tree view'|trans }}</a> {{ 'or'|trans }} <b>{{ 'flat'|trans }}</b>{#
+       #}{% else %}<b>{{ 'tree view'|trans }}</b> {{ 'or'|trans }} <a href="{{ fileSwitch }}">{{ 'flat'|trans }}</a>{% endif %})' 
+      }
+  };
+
+  otable = $('#dirlist').dataTable(dirlistTableConfig);
+
+}
+
+$(document).ready(function () {
+  createDirlistTable();
+  $('img').tooltip();
+  $("#lichistogram_length select").css('text-align','right');
+  $("#dirlist_length select").css('text-align','right');
+
+  $('#selectMarkIrrelevant').change(function (){
+    if($(this).is(":checked")) {
+      $("input:checkbox[id=selectedForIrrelevant]").each(function() {
+        $(this).prop("checked",true);
+      });
+    } else {
+      $("input:checkbox[id=selectedForIrrelevant]").each(function() {
+        $(this).prop("checked",false);
+      });
+    }
+  });
+
+  $('#markIrrelevant').click(function () {
+    var currentArray = [];
+    $("input:checkbox[id=selectedForIrrelevant]:checked").each(function() {
+      getCurrentVal = $(this).val();
+      if(jQuery.inArray(getCurrentVal, currentArray) < 0 && getCurrentVal != ""){
+        currentArray.push(getCurrentVal);
+      }
+    });
+    markDecisions(currentArray);
+  });
+});
+

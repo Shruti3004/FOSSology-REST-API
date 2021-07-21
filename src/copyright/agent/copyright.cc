@@ -1,0 +1,159 @@
+/*
+Author: Daniele Fognini, Andreas Wuerl, Johannes Najjar
+Copyright (C) 2014, Siemens AG
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+*/
+/**
+ * \file copyright.cc
+ * \brief Copyright agent
+ * \page copyright Copyright Agent
+ * \tableofcontents
+ *
+ * Copyright agent uses regular expressions to find out copyright
+ * statments, author statements, URLs and Emails in uploads.
+ *
+ * Copyright agent also create ecc agent which also uses regular
+ * expressions to find ecc statements in uploads.
+ *
+ * The agent runs in multi-threaded mode and creates a new thread for
+ * every pfile for faster processing.
+ *
+ * \section copyrightactions Supported actions
+ * | Command line flag | Description |
+ * | ---: | :--- |
+ * | -h [--help] | Shows help |
+ * | -T [--type] arg (=15) | Type of regex to try |
+ * | -v [--verbose] | Increase verbosity |
+ * | --regex arg | User defined Regex to search: |
+ * || `[{name=cli}@@][{matchingGroup=0}@@]{regex}` |
+ * || e.g. 'linux@@1@@(linus) torvalds' |
+ * | --files arg | Files to scan |
+ * | -J [--json] | Output JSON |
+ * | -d [--directory] | Directory to scan (recursive) |
+ * \section copyrightsource Agent source
+ *   - \link src/copyright/agent \endlink
+ *   - \link src/copyright/ui \endlink
+ *   - Functional test cases \link src/copyright/agent_tests/Functional \endlink
+ *   - Unit test cases \link src/copyright/agent_tests/Unit \endlink
+ */
+#include <stdio.h>
+#include <iostream>
+#include <sstream>
+
+#include "copyright.hpp"
+
+using namespace std;
+using namespace fo;
+
+#define return_sched(retval) \
+  do {\
+    fo_scheduler_disconnect((retval));\
+    return (retval);\
+  } while(0)
+
+int main(int argc, char** argv)
+{
+  /* before parsing argv and argc make sure */
+  /* to initialize the scheduler connection */
+
+  CliOptions cliOptions;
+  vector<string> fileNames;
+  string directoryToScan;
+  if (!parseCliOptions(argc, argv, cliOptions, fileNames, directoryToScan))
+  {
+    return_sched(1);
+  }
+
+  bool json = cliOptions.doJsonOutput();
+  bool ignoreFilesWithMimeType = cliOptions.doignoreFilesWithMimeType();
+  CopyrightState state = getState(std::move(cliOptions));
+
+  if (!fileNames.empty())
+  {
+    const unsigned long fileNamesCount = fileNames.size();
+    bool fileError = false;
+    bool printComma = false;
+
+    if (json)
+    {
+      cout << "[" << endl;
+    }
+
+#pragma omp parallel
+    {
+#pragma omp for
+      for (unsigned int argn = 0; argn < fileNamesCount; ++argn)
+      {
+        const string fileName = fileNames[argn];
+        pair<string, list<match>> scanResult = processSingleFile(state, fileName);
+        if (json)
+        {
+          appendToJson(fileName, scanResult, printComma);
+        }
+        else
+        {
+          printResultToStdout(fileName, scanResult);
+        }
+        if (scanResult.first.empty())
+        {
+          fileError = true;
+        }
+      }
+    }
+    if (json)
+    {
+      cout << endl << "]" << endl;
+    }
+    return fileError ? 1 : 0;
+  }
+  else if (directoryToScan.length() > 0)
+  {
+    scanDirectory(state, json, directoryToScan);
+  }
+  else
+  {
+    DbManager dbManager(&argc, argv);
+    int agentId = queryAgentId(dbManager.getConnection());
+
+    CopyrightDatabaseHandler copyrightDatabaseHandler(dbManager);
+    if (!copyrightDatabaseHandler.createTables())
+    {
+      std::cout << "FATAL: initialization failed" << std::endl;
+      return_sched(9);
+    }
+
+    while (fo_scheduler_next() != NULL)
+    {
+      int uploadId = atoi(fo_scheduler_current());
+
+      if (uploadId <= 0) continue;
+
+      int arsId = writeARS(agentId, 0, uploadId, 0, dbManager);
+
+      if (arsId <= 0)
+        return_sched(5);
+
+      if (!processUploadId(state, agentId, uploadId, copyrightDatabaseHandler, ignoreFilesWithMimeType))
+        return_sched(2);
+
+      fo_scheduler_heart(0);
+      writeARS(agentId, arsId, uploadId, 1, dbManager);
+    }
+    fo_scheduler_heart(0);
+    /* do not use bail, as it would prevent the destructors from running */
+    return_sched(0);
+  }
+}
+

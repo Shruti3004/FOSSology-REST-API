@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>fossjobs - Run fossology agents on an uploaded file.</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a>
+    <ul>
+      <li><a href="#Options">Options</a></li>
+      <li><a href="#Examples">Examples</a></li>
+    </ul>
+  </li>
+  <li><a href="#Authors">Authors</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>fossjobs - Run fossology agents on an uploaded file.</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<p>fossjobs [-a] [-h] [-u] [-v] [-A &lt;string&gt;] [-U &lt;upload-id&gt;] [-D &lt;upload-id&gt;] [--username &lt;string&gt;] [--password &lt;string&gt;] [-c configuration directory]</p>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>fossjobs is a command line fossology utility that can be used to list the available default agents or upload id&#39;s. Using that information, fossjobs can be used to schedule all the default agents or a subset of them for a given upload id. This effectivly creates a job and schedules the agents to perform their analysis on the upload id given.</p>
+
+<h2 id="Options">Options</h2>
+
+<dl>
+
+<dt id="a"><b>-a</b></dt>
+<dd>
+
+<p>List the available default agents.</p>
+
+</dd>
+<dt id="h"><b>-h</b></dt>
+<dd>
+
+<p>Standard help flag, prints usage.</p>
+
+</dd>
+<dt id="username-username"><b>--username</b> <i>username</i></dt>
+<dd>
+
+<p>username, specify the username for a user who has the priviledge to execute cp2foss. Also you can add one file .fossology.rc in your current home directory, add user name and password in 2 seperate line.</p>
+
+</dd>
+<dt id="password-password"><b>--password</b> <i>password</i></dt>
+<dd>
+
+<p>password, specify the password for a user who has the priviledge to execute cp2foss. Also you can add one file .fossology.rc in your current home directory, add user name and password in 2 seperate line.</p>
+
+</dd>
+<dt id="c-configuration-directory"><b>-c</b> <i>configuration directory</i></dt>
+<dd>
+
+<p>Specify the directory for the system configuration, when installation from src, default dir is /usr/local/etc/fossology/ , when installation from package, default dir is /etc/fossology/. This defaults to your last installation location.</p>
+
+</dd>
+<dt id="u"><b>-u</b></dt>
+<dd>
+
+<p>List the available upload id&#39;s.</p>
+
+</dd>
+<dt id="v"><b>-v</b></dt>
+<dd>
+
+<p>Verbose output</p>
+
+</dd>
+<dt id="A-string"><b>-A &lt;string</b>&gt;</dt>
+<dd>
+
+<p>This option can be used to run a subset of the default agents. The subset is specified using a comma separated list of agents. To display the available agents, use -a. To schedule all default agents, do not set this option.</p>
+
+</dd>
+<dt id="U-upload-id"><b>-U &lt;upload-id</b>&gt;</dt>
+<dd>
+
+<p>The upload id to schedule the agents to work on. To find an upload id use -u. The upload-id string can be a comma-separated list of upload ids. Or, use &#39;ALL&#39; to specify all upload ids.</p>
+
+</dd>
+<dt id="D-upload-id"><b>-D &lt;upload-id</b>&gt;</dt>
+<dd>
+
+<p>The upload id to schedule the delete agents to work on. To find an upload id use -u. The string can either be &#39;ALL&#39;, a string (the upload_id), or an array of upload_id&#39;s if multiple -D&#39;s were specified.</p>
+
+</dd>
+</dl>
+
+<h2 id="Examples">Examples</h2>
+
+<p>list all of the available agents</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -a</code></pre>
+
+<p>list the upload id&#39;s</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -u</code></pre>
+
+<p>schedule a subset of the agents (unpack and nomos) on an upload id.</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -A &quot;agent_unpack,agent_nomos&quot; -U 20</code></pre>
+
+<p>schedule all the agents using a priority of 5 on upload id 20</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -U 20 -P 5</code></pre>
+
+<p>schedule all upload id&#39;s with all default agents</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -U ALL</code></pre>
+
+<p>schedule delete task for all upload id</p>
+
+<pre><code>  fossjobs --username USER --password PASSWORD -D ALL</code></pre>
+
+<h1 id="Authors">Authors</h1>
+
+<p>Neal Krawetz and Mark Donohoe</p>
+
+
+</body>
+
+</html>
+
+

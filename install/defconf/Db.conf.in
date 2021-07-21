@@ -1,0 +1,5 @@
+dbname={$PROJECT};
+host=localhost;
+user={$PROJECTUSER};
+password={$PROJECTUSER};
+client_encoding=utf8;
