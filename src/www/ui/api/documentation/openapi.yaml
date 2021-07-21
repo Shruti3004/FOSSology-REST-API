@@ -1,0 +1,1958 @@
+# Copyright (C) Siemens AG 2017-2021
+# Copyright (C) 2021 Orange by Piotr Pszczola <piotr.pszczola@orange.com>
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+openapi: 3.0.2
+info:
+  title: FOSSology API
+  description: Automate your fossology instance using REST API
+  version: 1.3.3
+  contact:
+    email: fossology@fossology.org
+  license:
+    name: GPL-2.0-only
+    url: https://github.com/fossology/fossology/blob/master/LICENSE
+servers:
+  - url: http://localhost/repo/api/v1
+    description: Localhost instance
+security:
+  - bearerAuth: []
+externalDocs:
+  description: Basic guide
+  url: https://github.com/fossology/fossology/wiki/FOSSology-REST-API
+tags:
+- name: auth
+  description: Authentication endpoints
+- name: info
+  description: Basic info about API
+- name: Upload
+  description: Endpoints related to uploads
+- name: Organize
+  description: Endpoints for organization of data
+- name: Search
+  description: Searching data on FOSSology
+- name: User
+  description: User management
+- name: Admin
+  description: Administrator tasks
+- name: Job
+  description: FOSSology jobs
+- name: Folders
+  description: Folder management
+- name: Groups
+  description: User group management
+- name: Report
+  description: Upload's report
+- name: License
+  description: License and obligation management
+
+paths:
+  /tokens:
+    post:
+      tags:
+        - auth
+      security: []
+      summary: Generate a new token
+      description: >
+        Generate a new token to access REST API
+      requestBody:
+        description: Required details for generating new token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '201':
+          description: Token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  header:
+                      type: string
+              example:
+                {"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb2NhbGhvc3QiLCJhdWQiOiJsb2NhbGhvc3QiLCJleHAiOjE1NTEyOTIyMDAsIm5iZiI6MTU1MTIwNTgwMCwianRpIjoiTmk0eiIsInNjb3BlIjoicmVhZCJ9.71D6xTD2QE45t9AVCwbrQwSSae5lC4yzKCMpZWXoC2Q"}
+        '404':
+          description: UserName or password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /version:
+    get:
+      deprecated: true
+      tags:
+        - info
+      security: []
+      summary: Current API information
+      description: >
+        Deprecated in favour of /info endpoint.
+      responses:
+        '200':
+          description: The version and security information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /info:
+    get:
+      operationId: getInfo
+      tags:
+        - info
+      security: []
+      summary: Get the current API information
+      description: >
+        Get the current API version, supported authentication methods
+        and description
+      responses:
+        '200':
+          description: The API information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+        - info
+      security: []
+      summary: Get the status of API service
+      description: >
+        Check if API is ready to accept requests or not
+      responses:
+        '200':
+          description: The API information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeathInfo'
+        '503':
+          description: The API is not unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeathInfo'
+
+  /uploads/{id}:
+    parameters:
+      - name: id
+        required: true
+        description: Id of the upload
+        in: path
+        schema:
+          type: integer
+      - name: groupName
+        description: The group name to chose while accessing the package
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+        - Upload
+      summary: Get single upload by id
+      description:
+        Returns a single upload
+      responses:
+        '200':
+          description: Get upload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        '503':
+          description: >
+            The ununpack agent has not started yet. Please check the 'Look-at'
+            header for more information
+          headers:
+            'Look-at':
+              description: Contains the URL to get jobs for the given upload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+    delete:
+      tags:
+        - Upload
+        - Organize
+      summary: Delete upload by id
+      responses:
+        '202':
+          description: Upload will be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+    patch:
+      tags:
+        - Upload
+        - Organize
+      description: Move upload from one folder to other
+      parameters:
+        - name: folderId
+          description: Folder Id, where upload should be moved to
+          in: header
+          required: true
+          schema:
+            type: integer
+      responses:
+        '202':
+          description: Upload will be moved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+    put:
+      tags:
+        - Upload
+        - Organize
+      description: Can be used to copy uploads
+      parameters:
+        - name: folderId
+          description: Folder Id, where upload should be copied to
+          in: header
+          required: true
+          schema:
+            type: integer
+      responses:
+        '202':
+          description: Upload will be copied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /uploads:
+    parameters:
+      - name: groupName
+        description: The group name to chose while accessing the package
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+        - Upload
+      summary: Uploads
+      parameters:
+        - name: folderId
+          description: Folder ID to limit the uploads to
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: recursive
+          description: Load uploads from child folders as well
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: name
+          description: Filter pattern for name and description
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          description: Status of uploads
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - Open
+              - InProgress
+              - Closed
+              - Rejected
+        - name: assignee
+          description: >
+            User name to which uploads are assigned to or -me- or -unassigned-
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: since
+          description: Uploads since given date in YYYY-MM-DD format
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: \d{4}\-\d{2}\-\d{2}
+        - name: page
+          description: Page number to fetch
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          description: Limits of responses per request
+          in: header
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+      description: >
+        The uploads endpoint returns all uploads
+      responses:
+        '200':
+          description: An array of uploads
+          headers:
+            X-Total-Pages:
+              description: Total number of pages which can be fetched
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Upload'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+    post:
+      tags:
+        - Upload
+      summary: Post new upload to FOSSology
+      description: >
+        Endpoint to create a new upload in FOSSology
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/VcsUpload'
+                - $ref: '#/components/schemas/UrlUpload'
+                - $ref: '#/components/schemas/ServerUpload'
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileInput:
+                  type: string
+                  format: binary
+      parameters:
+        - name: folderId
+          description: Folder Id, where upload should be created
+          in: header
+          required: true
+          schema:
+            type: integer
+        - name: uploadDescription
+          description: Visible description of the file
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: public
+          description: The access level to the upload
+          in: header
+          required: false
+          schema:
+            type: string
+            enum:
+              - private
+              - protected
+              - public
+            default: protected
+        - name: ignoreScm
+          description: >
+            Ignore SCM files (Git, SVN, TFS) and files with particular Mimetype
+          in: header
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: uploadType
+          description: >
+            Type of upload done. Required for VCS, URL and server uploads
+          in: header
+          required: false
+          schema:
+            type: string
+            enum:
+              - vcs
+              - url
+              - server
+            default: vcs
+      responses:
+        '201':
+          description: Upload is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /uploads/{id}/summary:
+    parameters:
+      - name: id
+        required: true
+        description: Id of the upload
+        in: path
+        schema:
+          type: integer
+      - name: groupName
+        description: The group name to chose while accessing the package
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+        - Upload
+      summary: Get single upload summary
+      description:
+        Returns summary for single upload
+      responses:
+        '200':
+          description: Get summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadSummary'
+        '503':
+          description: >
+            The ununpack agent has not started yet. Please check the 'Look-at'
+            header for more information
+          headers:
+            'Look-at':
+              description: Contains the URL to get jobs for the given upload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /uploads/{id}/licenses:
+    parameters:
+      - name: id
+        required: true
+        description: Id of the upload
+        in: path
+        schema:
+          type: integer
+      - name: agent
+        required: true
+        description: Name of the agent
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+              - nomos
+              - monk
+              - ninka
+              - ojo
+              - reportImport
+              - reso
+          uniqueItems: true
+        style: form
+        explode: false
+      - name: containers
+        required: false
+        description: Show directories and containers
+        in: query
+        schema:
+          type: boolean
+          default: true
+      - name: groupName
+        description: The group name to chose while accessing the package
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+        - Upload
+      summary: Get licenses found by agent
+      description:
+        Returns the list of licenses found by requested agent
+      responses:
+        '200':
+          description: Get licenses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadLicenses'
+        '503':
+          description: >
+            The ununpack agent or queried agents have not started yet. Please
+            check the 'Look-at' header for more information.
+          headers:
+            'Look-at':
+              description: Contains the URL to get jobs for the given upload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '412':
+          description: >
+            The agent has not been scheduled for the upload. Please check the
+            response message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+
+  /search:
+    get:
+      tags:
+        - Search
+      description: Search the FOSSology for a specific file
+      parameters:
+        - name: groupName
+          description: The group name to chose while performing search
+          in: header
+          required: false
+          schema:
+            type: string
+            description: Group name, from last login if not provided
+        - name: searchType
+          # use 'allfiles', if not given
+          required: false
+          description: Limit search to
+          in: header
+          schema:
+            type: string
+            enum:
+              - directory
+              - containers
+              - allfiles
+            default: allfiles
+        - name: uploadId
+          in: header
+          required: false
+          description: Id of the upload to search files into
+          schema:
+            type: integer
+        - name: filename
+          description: Filename to find, can contain % as wild-card
+          required: false
+          in: header
+          schema:
+            type: string
+        - name: tag
+          description: Tag to find
+          required: false
+          in: header
+          schema:
+            type: string
+        - name: filesizemin
+          description: Min filesize in bytes
+          required: false
+          in: header
+          schema:
+            type: integer
+            minimum: 0
+        - name: filesizemax
+          description: Max filesize in bytes
+          required: false
+          in: header
+          schema:
+            type: integer
+            minimum: 0
+        - name: license
+          description: License search filter
+          required: false
+          in: header
+          schema:
+            type: string
+        - name: copyright
+          description: Copyright search filter
+          required: false
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResults'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /users:
+    get:
+      tags:
+        - User
+        - Admin
+      description: Get the registered users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /users/{id}:
+    parameters:
+      - name: id
+        required: true
+        in: path
+        schema:
+          type: integer
+    get:
+      tags:
+        - User
+        - Admin
+      summary: Get user by id
+      responses:
+        '200':
+          description: User with the given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    delete:
+      tags:
+        - User
+        - Admin
+      summary: Delete user by id
+      responses:
+        '202':
+          description: User will be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /users/self:
+    get:
+      tags:
+        - User
+      description: Get the information about logged in user
+      
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                userSelf
+                    properties:
+                      defaultGroup:
+                        type: string
+                        description: Default group of the user
+                        example:
+                          "fossy"
+                - $ref: '#/components/schemas/User'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /jobs:
+    parameters:
+      - name: groupName
+        description: The group name to chose while accessing jobs
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - Job
+      summary: Gets all jobs
+      description: Returns all jobs with their status
+      parameters:
+        - name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          in: header
+        - name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+          in: header
+        - name: upload
+          required: false
+          schema:
+            type: integer
+          in: query
+          description: Return jobs for the given upload id only
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Total-Pages:
+              description: Total number of pages which can be generated based on limit
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+    post:
+      tags:
+        - Job
+      summary: Schedule an Analysis
+      description:  Schedule an Analysis of an existing upload
+      parameters:
+        # This could also be omitted, because there are no real folders
+        - name: folderId
+          in: header
+          required: true
+          schema:
+            type: integer
+        - name: uploadId
+          in: header
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Agents to be scheduled with the job
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanOptions'
+      responses:
+        '201':
+          description: Job Scheduled with job id in message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+          $ref: '#/components/responses/defaultResponse'
+  /jobs/{id}:
+    parameters:
+      - name: id
+        required: true
+        description: Id of the job
+        in: path
+        schema:
+          type: integer
+    get:
+      tags:
+      - Job
+      summary: Gets single job by id
+      description: Returns job with the status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+
+  /folders:
+    parameters:
+      - name: groupName
+        description: The group name to chose while accessing folders
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - Folders
+      summary: Get the list of accessible folders
+      responses:
+        '200':
+          description: List of folders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    post:
+      tags:
+      - Organize
+      - Admin
+      - Folders
+      summary: Create a new folder
+      parameters:
+        - name: parentFolder
+          in: header
+          required: true
+          description: Parent folder for the new folder
+          schema:
+            type: integer
+        - name: folderName
+          in: header
+          required: true
+          description: Name of the new folder
+          schema:
+            type: string
+        - name: folderDescription
+          in: header
+          required: false
+          description: Description of the new folder
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Folder with the same name already exists under the same parent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '201':
+          description: Folder is created with new folder id in message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /folders/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID of the folder
+        schema:
+          type: integer
+      - name: groupName
+        description: The group name to chose while accessing the folder
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - Folders
+      summary: Get a single folder details
+      responses:
+        '200':
+          description: Details of the required folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    delete:
+      tags:
+      - Organize
+      - Folders
+      - Admin
+      summary: Delete a folder
+      responses:
+        '202':
+          description: Folder scheduled to be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    patch:
+      tags:
+      - Organize
+      - Folders
+      parameters:
+        - name: name
+          in: header
+          required: false
+          description: New name of the folder
+          schema:
+            type: string
+        - name: description
+          in: header
+          required: false
+          description: New description of the folder
+          schema:
+            type: string
+      summary: Edit a folder's description
+      responses:
+        '200':
+          description: Folder is updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    put:
+      tags:
+      - Organize
+      - Folders
+      parameters:
+        - name: parent
+          in: header
+          required: true
+          description: New parent folder id
+          schema:
+            type: integer
+        - name: action
+          in: header
+          required: true
+          description: Action to be performed
+          schema:
+            type: string
+            enum:
+              - copy
+              - move
+      summary: Copy/Move a folder
+      responses:
+        '202':
+          description: Folder will be copied/moved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+
+  /groups:
+    get:
+      tags:
+      - Groups
+      summary: Get the list of groups (accessible groups for user, all groups for admin)
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    post:
+      tags:
+      - Organize
+      - Groups
+      - Admin
+      summary: Create a new group
+      parameters:
+        - name: name
+          in: header
+          required: true
+          description: Name of the new group
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Group has been added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '400':
+          description: Group already exists, failed to create group or no group name provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '500':
+          description: Internal server error with details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+
+  /report:
+    get:
+      tags:
+      - Job
+      - Report
+      summary: Get the reports for a given upload
+      parameters:
+        - name: uploadId
+          in: header
+          required: true
+          description: Id of the upload to generate the report for
+          schema:
+            type: integer
+        - name: reportFormat
+          in: header
+          required: true
+          description: Which report to be genereated
+          schema:
+            type: string
+            enum:
+              - dep5
+              - spdx2
+              - spdx2tv
+              - readmeoss
+              - unifiedreport
+        - name: groupName
+          description: The group name to chose while generating a report
+          in: header
+          required: false
+          schema:
+            type: string
+            description: Group name, from last login if not provided
+      responses:
+        '201':
+          description: Report generation is scheduled. Link to download report will be in message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /report/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Id the report to download
+        schema:
+          type: integer
+      - name: groupName
+        description: The group name to chose while downloading specific report
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - Job
+      - Report
+      summary: Download the report
+      responses:
+        '200':
+          description: Required report
+          content:
+            text/plain:
+              schema:
+                type: string
+                format: binary
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '503':
+          description: Report is not ready yet. Check 'Retry-After' header.
+          headers:
+            Retry-After:
+              description: Retry the request after this many seconds
+              schema:
+                type: integer
+                example: 10
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /filesearch:
+    parameters:
+      - name: groupName
+        description: The group name to chose while downloading specific report
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    post:
+      tags:
+      - Upload
+      - Search
+      summary: Get the information of files matching the provided hashes
+      requestBody:
+          description: List of file hashes to fetch
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hash'
+      responses:
+        '200':
+          description: List of matching files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /license:
+    parameters:
+      - name: groupName
+        description: The group name to chose
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - License
+      parameters:
+        - name: page
+          description: Page number to fetch
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          description: Limits of responses per request
+          in: header
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 100
+        - name: active
+          description: Get only active licenses
+          in: header
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: kind
+          description: Which kind of licenses to get.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - candidate
+              - main
+              - all
+            default: all
+      summary: Get all license from the database
+      responses:
+        '200':
+          description: All licenses from database
+          headers:
+            X-Total-Pages:
+              description: Total number of pages which can be fetched
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Id key
+                          example:
+                            125
+                    - $ref: '#/components/schemas/License'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    post:
+      tags:
+      - License
+      summary: Create a new license
+      requestBody:
+        description: Information about new license
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/License'
+                - type: object
+                  properties:
+                    mergeRequest:
+                      description: Open a merge request for candidate license?
+                      type: boolean
+                      default: false
+              required:
+                - shortName
+      responses:
+        '201':
+          description: License added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        '409':
+          description: License with same name or text already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+  /license/{shortname}:
+    parameters:
+      - name: shortname
+        in: path
+        required: true
+        description: Shortname of the license
+        schema:
+          type: string
+      - name: groupName
+        description: The group name to chose
+        in: header
+        required: false
+        schema:
+          type: string
+          description: Group name, from last login if not provided
+    get:
+      tags:
+      - License
+      summary: Get a specific license
+      responses:
+        '200':
+          description: License
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Id key
+                        example:
+                          125
+                  - $ref: "#/components/schemas/License"
+                  - type: object
+                    properties:
+                      obligations:
+                        description: Obligations associated with the license
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Obligation'
+        '404':
+          description: License not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+    patch:
+      tags:
+      - License
+      summary: Update a license
+      requestBody:
+        description: Information to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Set the properties to be updated
+              properties:
+                fullName:
+                  description: New fullname
+                  type: string
+                  nullable: true
+                  example:
+                    "Updated license name"
+                text:
+                  description: New license text
+                  type: string
+                  nullable: true
+                  example:
+                    "Updated and corrected license text"
+                url:
+                  description: New URL for license
+                  type: string
+                  nullable: true
+                  example:
+                    "https://opensource.org/licenses/MIT"
+                risk:
+                  description: New risk value
+                  type: integer
+                  nullable: true
+                  example:
+                    2
+      responses:
+        '200':
+          description: License added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SearchResults:
+      type: object
+      properties:
+        upload:
+          $ref: '#/components/schemas/Upload'
+        uploadTreeId:
+          type: integer
+          description: Upload tree ID
+        filename:
+          type: string
+          description: Filename of the treeItem
+    LicenseDecider:
+      type: object
+      properties:
+        nomos_monk:
+          type: boolean
+          description: Scanners matches if all Nomos findings are within the Monk findings.
+        bulk_reused:
+          type: boolean
+          description: Bulk phrases from reused packages.
+        new_scanner:
+          type: boolean
+          description: New scanner results, i.e., decisions were marked as work in progress if new scanner finds additional licenses.
+        ojo_decider:
+          type: boolean
+          description: Scanners matches if Ojo or REUSE.Software findings are no contradiction with other findings.
+    ScanOptions:
+      type: object
+      properties:
+        analysis:
+          $ref: '#/components/schemas/Analysis'
+        decider:
+          $ref: '#/components/schemas/LicenseDecider'
+        reuse:
+          $ref: '#/components/schemas/Reuser'
+    Upload:
+      type: object
+      properties:
+        folderid:
+          type: integer
+          description: The folder id, where the upload is located
+        foldername:
+          type: string
+          description: The name of the folder where the upload is located
+        id:
+          type: integer
+          description: Upload id of the upload.
+        description:
+          type: string
+          description: Description of the upload.
+        uploadname:
+          type: string
+          description: Display name of the upload.
+        uploaddate:
+          type: string
+          description: Date, when the file was uploaded.
+        assignee:
+          type: integer
+          description: assignee id of the upload.
+          nullable: true
+        hash:
+          $ref: '#/components/schemas/Hash'
+    UploadSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Upload id of the upload.
+        uploadName:
+          type: string
+          description: Display name of the upload.
+        assignee:
+          type: integer
+          description: assignee id of the upload.
+          nullable: true
+        mainLicense:
+          type: string
+          description: Main license selected on the upload.
+        uniqueLicenses:
+          type: integer
+          description: No. of unique licenses found.
+        totalLicenses:
+          type: integer
+          description: Total no. of licenses found.
+        uniqueConcludedLicenses:
+          type: integer
+          description: Unique licenses concluded.
+        totalConcludedLicenses:
+          type: integer
+          description: Total concluded licenses.
+        filesToBeCleared:
+          type: integer
+          description: Files without clearing decisions.
+        filesCleared:
+          type: integer
+          description: Files with clearing decisions.
+        clearingStatus:
+          type: string
+          enum:
+            - Open
+            - InProgress
+            - Closed
+            - Rejected
+          description: Upload is clearing status.
+        copyrightCount:
+          type: integer
+          description: No. of copyrights found in the upload.
+    Job:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the job
+        name:
+          type: string
+          description: Name of the job
+        queueDate:
+          type: string
+          description: When the job was queued
+        uploadId:
+          type: integer
+          description: Upload for which the job was scheduled
+        userId:
+          type: integer
+          description: User who scheduled the job
+        groupId:
+          type: integer
+          description: Group under which the job was scheduled
+        eta:
+          type: integer
+          description: ETA of job to finish in seconds
+        status:
+          type: string
+          enum:
+            - Completed
+            - Failed
+            - Queued
+            - Processing
+          description: Denotes the current status of the job in the queue
+    Info:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+          example: 200
+        message:
+          type: string
+          description: Message in the info
+        type:
+          type: string
+          enum:
+            - INFO
+            - ERROR
+          description: Denotes if info was created on error
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the user
+        name:
+          type: string
+          description: Unique username
+        description:
+          type: string
+          description: Description of the user
+        email:
+          type: string
+          description: Email of the user, needs to be unique and is required
+        accessLevel:
+          type: string
+          enum:
+            - none
+            - read_only
+            - read_write
+            - admin
+        rootFolderId:
+          type: number
+          format: int
+          description: root folder id of the user
+        emailNotification:
+          type: boolean
+          description: enable email notification when upload scan completes
+        agents:
+          $ref: '#/components/schemas/Analysis'
+      required:
+        - id
+        - name
+        - description
+    Analysis:
+      type: object
+      properties:
+        bucket:
+          type: boolean
+          description: Should bucket analysis be run on this upload
+        copyright_email_author:
+          type: boolean
+          description: Should Copyright/Email/URL/Author Analysis be run on this upload.
+        ecc:
+          type: boolean
+          description: Should ECC Analysis be run on this upload.
+        keyword:
+          type: boolean
+          description: Should keyword Analysis be run on this upload.
+        mime:
+          type: boolean
+          description: Should MIME Analysis be run on this upload.
+        monk:
+          type: boolean
+          description: Should Monk Analysis be run on this upload.
+        nomos:
+          type: boolean
+          description: Should Nomos Analysis be run on this upload.
+        ojo:
+          type: boolean
+          description: Should OJO Analysis be run on this upload.
+        package:
+          type: boolean
+          description: Should Package Analysis be run on this upload.
+        reso:
+          type: boolean
+          description: Should REUSE.Software Analysis be run on this upload.
+    Reuser:
+      type: object
+      properties:
+        reuse_upload:
+          type: integer
+          description: The UploadID to reuse.
+        reuse_group:
+          type: string
+          description: The group of the reused upload
+        reuse_main:
+          type: boolean
+          description: Copy the main license from reused package?
+        reuse_enhanced:
+          type: boolean
+          description: Run enhanced reuser with diff tool (slow)
+        reuse_report:
+          type: boolean
+          description: Copy all report configuration from conf page.
+        reuse_copyright:
+          type: boolean
+          description: Copy the copyright deactivation and edits.
+      required:
+        - reuse_uplod
+        - reuse_group
+    Folder:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the folder.
+        name:
+          type: string
+          description: Name of the folder.
+        description:
+          type: string
+          description: Description of the folder.
+        parent:
+          type: integer
+          description: Id of the parent folder (if any, null otherwise).
+    TokenRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username of the login user.
+        password:
+          type: string
+          format: password
+          description: Password of the user trying to login.
+        token_name:
+          type: string
+          maxLength: 40
+          description: Friendly name of the token
+        token_scope:
+          type: string
+          enum:
+            - read
+            - write
+          description: The scope of the token.
+        token_expire:
+          type: string
+          format: date
+          description: Date when the token must expire (default max 30 days).
+      required:
+        - username
+        - password
+        - token_name
+        - token_scope
+        - token_expire
+    VcsUpload:
+      description: To create an upload from a version control system
+      type: object
+      properties:
+        vcsType:
+          description: VCS type
+          type: string
+          enum:
+            - svn
+            - git
+        vcsUrl:
+          description: URL of the repository
+          type: string
+        vcsBranch:
+          description: Branch to checkout for analysis (for Git only)
+          type: string
+        vcsName:
+          description: Display name of the upload
+          type: string
+        vcsUsername:
+          description: Username for the VCS
+          type: string
+        vcsPassword:
+          description: Password for the VCS
+          type: string
+      required:
+        - vcsType
+        - vcsUrl
+    UploadLicenses:
+      type: array
+      items:
+        type: object
+        properties:
+          filePath:
+            description: Relative file path
+            type: string
+            example: "path/to/LICENSE"
+          findings:
+            $ref: '#/components/schemas/Findings'
+    UrlUpload:
+      description: To create an upload from a URL
+      type: object
+      properties:
+        url:
+          description: URL for file/folder to be uploaded
+          type: string
+        name:
+          description: Viewable name for this file or directory
+          type: string
+        accept:
+          description: >
+            Comma-separated lists of file name suffixes or patterns to accpet
+          type: string
+        reject:
+          description: >
+            Comma-separated lists of file name suffixes or patterns to reject
+          type: string
+        maxRecursionDepth:
+          description: Maximum recursion depth for folders (0 for infinite)
+          type: integer
+      required:
+        - url
+    ServerUpload:
+      description: To create an upload from a server
+      type: object
+      properties:
+        path:
+          description: File path to be uploaded (reccursive, support *)
+          type: string
+        name:
+          description: Viewable name for this file or directory
+          type: string
+      required:
+        - path
+    Hash:
+      description: Hash information of a file
+      type: object
+      properties:
+        sha1:
+          description: SHA1 checksum of the file
+          type: string
+          example:
+            "81fe8bfe87576c3ecb22426f8e57847382917acf"
+        md5:
+          description: MD5 checksum of the file
+          type: string
+          example:
+            "e2fc714c4727ee9395f324cd2e7f331f"
+        sha256:
+          description: SHA256 checksum of the file
+          type: string
+          example:
+            "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
+        size:
+          description: Size of the file in bytes
+          type: integer
+    File:
+      description: Meta information about file in FOSSology
+      type: object
+      properties:
+        hash:
+          $ref: '#/components/schemas/Hash'
+        findings:
+          $ref: '#/components/schemas/Findings'
+        uploads:
+          description: Upload ID if the file was uploaded as a package
+          type: array
+          items:
+            type: integer
+            description: Upload IDs where the given file was found
+          nullable: true
+        message:
+          description: Message in case provided hash not found or error
+          type: string
+          enum:
+            - "Not found"
+            - "Invalid keys"
+          example:
+            "Not found"
+          nullable: true
+      required:
+        - hash
+    Findings:
+      description: License findings and conclusions of file
+      type: object
+      properties:
+        scanner:
+          description: Licenses finding by scanner
+          type: array
+          items:
+            type: string
+            description: Name of license found
+            nullable: true
+          example:
+            - "MIT"
+            - "BSD-3-Clause"
+        conclusion:
+          description: >
+            Licenses concluded by user or main license in case of package
+          type: array
+          items:
+            type: string
+            description: Name of license concluded
+            nullable: true
+          example:
+            - "MIT"
+            - "GPL-2.0"
+        copyright:
+          description: >
+            Copyright findings for the file
+          type: array
+          items:
+            type: string
+            description: Copyright finding
+            nullable: true
+          example:
+            - "Copyright (C) 2017-2020 Free Software Foundation, Inc."
+            - "Copyright (C) 1991-2020 Free Software Foundation, Inc."
+    License:
+      description: License from the database
+      type: object
+      properties:
+        shortName:
+          description: Short name
+          type: string
+          example:
+            "MIT"
+        fullName:
+          description: Full name
+          type: string
+          example:
+            "MIT License"
+        text:
+          description: License text
+          type: string
+          example:
+            "MIT License Copyright (c) <year> <copyright holders> ..."
+        url:
+          description: URL of the license text
+          type: string
+          example:
+            "https://opensource.org/licenses/MIT"
+        risk:
+          description: Risk level
+          type: integer
+          nullable: true
+          example:
+            3
+        isCandidate:
+          description: Is the license a candidate?
+          type: boolean
+    Group:
+      description: Group object
+      type: object
+      properties:
+        id:
+          description: Id key
+          type: integer
+          example:
+            126
+        name:
+          description: Name of a group
+          type: string
+          example:
+            "Main group"
+    Obligation:
+      description: Obligation information
+      type: object
+      properties:
+        id:
+          description: Id key
+          type: integer
+          example:
+            126
+        topic:
+          description: Obligation topic
+          type: string
+          example:
+            "Should preserve notice"
+        type:
+          description: Type of obligation
+          type: string
+          example:
+            "Obligation"
+        text:
+          description: Obligation text
+          type: string
+          example:
+            "All notices from the package should be preserved."
+        classification:
+          description: >
+            Level of attention this obligation
+            should raise in the clearing process
+          type: string
+          enum:
+            - green
+            - white
+            - yellow
+            - red
+        comment:
+          description: Comments for the obligation
+          type: string
+          nullable: true
+          example:
+            "Please respect the obligation"
+    ApiInfo:
+      description: Info about the API
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the API service
+        description:
+          type: string
+          description: Additional information
+        version:
+          type: string
+          description: Current API version as per documentation
+        security:
+          type: array
+          description: Security methods allowed
+          items:
+            type: string
+        contact:
+          type: string
+          description: Contact email from API docs
+        license:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of license
+            url:
+              type: string
+              description: Link to license
+          description: Licensing of API
+    HeathInfo:
+      description: Health status of server
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - WARN
+            - ERROR
+          description: Status of service
+        scheduler:
+          type: object
+          description: Scheduler information
+          properties:
+            status:
+              type: string
+              description: Health status of scheduler
+              enum:
+                - OK
+                - ERROR
+        db:
+          type: object
+          description: DB connection status
+          properties:
+            status:
+              type: string
+              description: Health status of DB connection
+              enum:
+                - OK
+                - ERROR
+
+  responses:
+    defaultResponse:
+      description: Some error occured. Check the "message"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Info'

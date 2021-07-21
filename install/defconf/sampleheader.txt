@@ -1,0 +1,13 @@
+Hello,
+
+Your FOSSology scan has completed.
+
+Upload info
+
+Upload Name     => $UPLOADNAME
+Browse Upload   => $BROWSELINK
+Job Queue       => $JOBQUEUELINK
+Uploaded Folder => $UPLOADFOLDERNAME
+
+Agents => 
+$AGENTSTATUS

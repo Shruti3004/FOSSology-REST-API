@@ -1,0 +1,51 @@
+{# Copyright 2015 Siemens AG
+
+   Copying and distribution of this file, with or without modification,
+   are permitted in any medium without royalty provided the copyright notice and this notice are preserved.
+   This file is offered as-is, without any warranty.
+#}
+SPDXVersion: SPDX-2.2
+DataLicense: CC0-1.0
+
+##-------------------------
+## Document Information
+##-------------------------
+
+DocumentNamespace: {{ uri }}
+DocumentName: {{ documentName }}
+SPDXID: SPDXRef-DOCUMENT
+
+##-------------------------
+## Creation Information
+##-------------------------
+
+Creator: Tool: spdx2
+{% if userName is not empty %}
+Creator: Person: {{ userName }}
+{% endif %}
+{% if organization is not empty %}
+Creator: Organization: {{ organisation }}
+{% endif %}
+CreatorComment: <text>
+This document was created using license information and a generator from Fossology.
+</text>
+Created: {{ 'now'|date('Y-m-d\\TH:i:s\\Z')}}
+LicenseListVersion: 2.6
+
+##-------------------------
+## Package Information
+##-------------------------
+
+{{ packageNodes }}
+
+##-------------------------
+## License Information
+##-------------------------
+
+{% for licenseId,licenseData in licenseTexts %}{% if licenseId starts with 'LicenseRef-' %}
+LicenseID: {{ licenseId|replace({' ': '-'}) }}
+LicenseName: {{ licenseData['name'] }}
+ExtractedText: <text> {{ licenseData['text']|replace({'<text>':'&lt;text&gt;','</text>':'&lt;/text&gt;'})
+                                            |replace({'\f':''}) }} </text>
+
+{% endif %}{% endfor %}

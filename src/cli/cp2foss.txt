@@ -1,0 +1,161 @@
+NAME
+    cp2foss - upload one or more files or archives into FOSSology and run
+    scans.
+
+SYNOPSIS
+     Usage: cp2foss [options] [archives]
+     Options: -AQThv [-f path] [-AA num] [-q {agent,agent.. | all}] [-X path]
+     [-n name] [-d description] [--username user name] [--password password]
+     [-c configuration directory] [-s Run synchronously]
+     [-P set public permission]
+     [-S upload from subversion repo] [-G upload from git repo] [--user user name for vcs] [--pass password for vcs]
+
+DESCRIPTION
+    cp2foss (copy to FOSSology) will load one or more files or archives into
+    the folder path specified by -f. The folders in the *folder-path* do not
+    need to exist. cp2foss will create them as needed.
+
+    Archives can be a file, directory or URL to the archive. If the archive
+    is a URL, then it is retrieved and added. If the archive is a file, then
+    it is used as the source to add. If the archive is a directory, then
+    *all* files under it are recursively added.
+
+    The archive support globbing - '*', all the matched files will be added.
+    Note: have to put it in single/double quotes, e.g. '*.php'
+
+    A single hyphen means the archive list will come from standard in
+    (stdin).
+
+  Options
+    NOTE: The order of the options is significant. Options are processed in
+    the order that they are used on the command line.
+
+    -A  Turn on *alpha-folders*. Default is off. When many archives are
+        loaded, navigating through all the folders can be difficult. This
+        option groups packages under alpha folders based on the first letter
+        of the package name. For example, your folder path is
+        *ProjX/pass1/*. Using alpha-folders the archive "andyroid" would end
+        up under a folder path *ProjX/pass/a-c/andyroid*.
+
+    -AA num
+        Specify the number of letters per folder (default: 3); implies -A.
+        For example, using the default, the alpha folders would be a-c, d-f,
+        g-i and so on.
+
+    -d *description*
+        A short meaningful description the captures what the upload folder
+        will contain. Description must be quoted with either single or
+        double quotes. This is ignored if you are uploading a directory.
+
+    -f *path*
+        folder path for storing uploaded files (e.g., -f 'Fedora/ISOs/Disk
+        1'). You do not need to specify your top level folder. All paths are
+        under the user top level folder. cp2foss will correctly create all
+        of the other intermediate folders in the path under the top folder.
+
+    -?  Help, see -h
+
+    -h  Help, prints a verbose usage message.
+
+    --username *username*
+        username, specify the username for a user who has the priviledge to
+        execute cp2foss. Alternatively, you can add the file .fossology.rc
+        in your current home directory, add user name and password in 2
+        separate lines.
+
+    --password *password*
+        password, specify the password for a user who has the priviledge to
+        execute cp2foss. Alternatively, you can add the file .fossology.rc
+        in your current home directory, add user name and password in 2
+        separate lines.
+
+    -c *configuration directory*
+        Specify the directory for the system configuration, when
+        installation from src, default dir is /usr/local/etc/fossology/,
+        when installation from package, default dir is /etc/fossology/. This
+        defaults to your last installation location.
+
+    -P *set public permission*
+        set the permission to public on this upload or not. 1: yes; 0: no
+
+    -s *Run synchronously*
+        Run synchronously. Don't return until archive already in FOSSology
+        repository. If the archive is a file (see below), then the file can
+        be safely removed.
+
+    -n *name*
+        An optional name that will be used to store the upload in the
+        database. The default name is the filename from the upload. Must be
+        set before each archive. Ignored if you specify a directory to
+        upload.
+
+    -Q  List all available processing agents. Any or all of the agents
+        listed can be used with the -q option. See -q for more details.
+
+    -q *agent-list | all*
+        Indicate what processing agents to use in analyzing the upload. The
+        list is specified as a comma-separated list of agents, (use -Q to
+        display the list of agents), or the word *all*. If -q is not used,
+        the item will still be uploaded and unpacked. To schedule agent jobs
+        later see fossjobs or use the FOSSology web interface.
+
+    -T  TEST. (for Debugging) No database or repository updates are
+        performed. Test mode enables verbose mode. This is a trial run of
+        the actions that cp2foss will do.
+
+    -v  Verbose (for debugging). Details the actions being performed. -T
+        turns this on automatically.
+
+    -X  Items to exclude when the input archive is a directory. You can
+        specify more than one -X. For example, to exclude all svn and cvs
+        directories, include the following before the archive's directory
+        path: -X .svn -X .cvs
+
+  Deprecated Options
+    -a *archive*
+        See Description above.
+
+    -p *path*
+        see -f
+
+    -R  Ignored.
+
+    -w  Ignored.
+
+    -W  Ignored.
+
+EXAMPLES
+    "cp2foss --username USER --password PASSWORD -f Folder -d 'the first
+    file' /tmp/file "
+
+    Would load the archive *file* in the folder *Folder* using the supplied
+    descriptions for the upload.
+
+    "cp2foss --username USER --password PASSWORD -q all -p Ubuntu -n 'Gutsy
+    Gibon' -d 'Ubuntu Gutsy 7.10'
+    'http://ubuntu.cs.utah.edu/releases/gutsy/ubuntu-7.10-desktop-i386.iso'
+    "
+
+    The above example, cp2foss will first get the archive using wget. It
+    will then load the downloaded archive into the database calling the
+    upload 'Gutsy Gibon'.
+
+    "cp2foss --username USER --password PASSWORD -A -f Fedora/Fedora8 -n
+    Fedora8 -d 'Fedora 8 Sources' -X .svn -X .cvs /bigdisk/fedora"
+
+    Loads every file under the /bigdisk/fedora directory, except files in
+    the Subversion and CVS directories. The files are placed in the UI under
+    the folder "Fedora/Fedora8" and are grouped by the first letter of each
+    file (a-c, d-f, g-h, etc.).
+
+    "cp2foss --username USER --password PASSWORD -d 'globbing test'
+    '/tmp/*.php' "
+
+    The above example, will upload all the php files in /tmp.
+
+AUTHOR
+    Neal Krawetz/Mark Donohoe for the Hewlett-Packard Company
+
+SEE ALSO
+    fossjobs
+

@@ -1,0 +1,232 @@
+57 remaining license strings:
+_LT_BOOKPURCHASE
+_LT_CC_ref
+_LT_CC_BY_SA_30
+_LT_classpath_exception_1
+_LT_CPOL_V102
+_LT_DUAL_LICENSE_44
+_LT_GPL_EXCEPT_0
+_LT_GPL_EXCEPT_3
+_LT_GPL_EXCEPT_Trolltech
+_LT_GPL_NAMED2
+_LT_GPL_NAMED3
+_LT_GPL_V2_NAMED
+_LT_GPL_V2_NAMED_ref1
+_LT_GPL_V2_NAMED_later
+_LT_GPL_V3_NAMED
+_LT_GPL_V3_NAMED_later
+_LT_GPL_NAMED_COMPATIBLE_1
+_LT_AGPL_NAMED
+_LT_GPLref7
+_LT_GPLref14
+_LT_GPLref15
+_LT_GPL_OR
+_LT_IGNORE_CLAUSE
+_LT_INDEMN_2
+_LT_INDEMN_5
+_LT_INDEMN_6
+_LT_INDEMN_7
+_LT_LGPL_NAMED2
+_LT_LGPL_OR
+_LT_MIT_NO_EVIL
+_LT_JSON
+_LT_MPLref2
+_LT_MPL_OR
+_LT_MSCORP_LIMITEDref1
+_LT_NPLref
+_LT_OCCT_exception_10_1
+_LT_OpenJDK_assembly_exception_10_2
+_LT_OPENSSLref5
+_LT_PUBDOM_3
+_LT_W3C_19980720
+_LT_ZZGEN_9
+_LT_ZZGEN_40
+_LT_ZZGEN_42
+_LT_ZZNON_COMMERC1
+_LT_SEE_COPYING_LICENSE_1
+_LT_SEE_COPYING_LICENSE_2
+_LT_SEE_URL
+_LT_SEE_COPYING_FINAL1
+_LT_SEE_COPYING_FINAL2
+_LT_SEE_OTHER_5
+_LT_SEE_OTHER_FINAL1
+_LT_SEE_OTHER_FINAL2
+_LT_SEE_OTHER_FINAL3
+_LT_SEE_LICENSE_FINAL1
+_LT_SEE_LICENSE_FINAL2
+_LT_SEE_README_FINAL1
+_LT_SEE_README_FINAL2
+====    ====
+Phrase[_LT_BOOKPURCHASE=#158]: (74) "(must|require) =FEW= (possess|purchase|buy|own) =SOME= copy of =SOME= book"
+-->: "__copy of__book"
+====    ====
+Phrase[_LT_CC_ref=#225]: (133) "(distribu|offere?d?|covered|released?|licen[cs]ed?|available|protected|provided|subject|comes|used?|see) =SOME= \<creative ?commons\>"
+-->: "__\<creative ?commons\>"
+====    ====
+Phrase[_LT_CC_BY_SA_30=#227]: (69) "You may not offer or impose any terms on the Adaptation that restrict"
+-->: "You may not offer or impose any terms on the Adaptation that restrict"
+====    ====
+Phrase[_LT_classpath_exception_1=#240]: (30) "classpath (linking )?exception"
+-->: "classpath __?exception"
+====    ====
+Phrase[_LT_CPOL_V102=#270]: (49) "(the Code Project Open License|CPOL) =FEW= 1\.?02"
+-->: "__1\.?02"
+====    ====
+Phrase[_LT_DUAL_LICENSE_44=#340]: (14) "FTL or GPL-2.0"
+-->: "FTL or GPL-2.0"
+====    ====
+Phrase[_LT_GPL_EXCEPT_0=#548]: (71) "(exception =SOME= (gpl|GNU General Public licen[cs]e)|\<gplexception\>)"
+-->: "__"
+====    ====
+Phrase[_LT_GPL_EXCEPT_3=#551]: (47) "gpl (plus|with) a( special|n|n added) exception"
+-->: "gpl __ a__ exception"
+====    ====
+Phrase[_LT_GPL_EXCEPT_Trolltech=#560]: (70) "(as a special exception =SOME= trolltech|trolltech =FEW= gplexception)"
+-->: "__"
+====    ====
+Phrase[_LT_GPL_NAMED2=#569]: (36) "(under|terms|releas) =SOME= [^al]gpl"
+-->: "__[^al]gpl"
+====    ====
+Phrase[_LT_GPL_NAMED3=#570]: (13) "[^-\.]\<gpl\>"
+-->: "[^-\.]\<gpl\>"
+====    ====
+Phrase[_LT_GPL_V2_NAMED=#571]: (9) "\<gplv2\>"
+-->: "\<gplv2\>"
+-->_ref1: "[^l]gpl__?v2"
+-->_later: "[^l]gpl__2\.?0?\+"
+====    ====
+Phrase[_LT_GPL_V2_NAMED_ref1=#572]: (13) "[^l]gpl( )?v2"
+-->: "[^l]gpl__?v2"
+====    ====
+Phrase[_LT_GPL_V2_NAMED_later=#573]: (22) "[^l]gpl(-| ?v)2\.?0?\+"
+-->: "[^l]gpl__2\.?0?\+"
+====    ====
+Phrase[_LT_GPL_V3_NAMED=#574]: (9) "\<gplv3\>"
+-->: "\<gplv3\>"
+-->_later: "[^al]gpl__3\.?0?\+"
+====    ====
+Phrase[_LT_GPL_V3_NAMED_later=#575]: (21) "[^al]gpl(-|v)3\.?0?\+"
+-->: "[^al]gpl__3\.?0?\+"
+====    ====
+Phrase[_LT_GPL_NAMED_COMPATIBLE_1=#578]: (55) "(\<gpl\>|gnu general public license) compatib(le|ility)"
+-->: "__ compatib__"
+====    ====
+Phrase[_LT_AGPL_NAMED=#579]: (13) "\<agpl(v.)?\>"
+-->: "\<agpl__?\>"
+====    ====
+Phrase[_LT_GPLref7=#589]: (88) "(is|are) protected (by|according to) =SOME= GNU ([^al]gpl|(general p|p)ublic licen[cs]e)"
+-->: "__ protected __GNU __"
+====    ====
+Phrase[_LT_GPLref14=#596]: (96) "(control|govern|draws? on|\<use\>|utili[sz]) =SOME= gnu ([^al]gpl|(general p|p)ublic licen[cs]e)"
+-->: "__gnu __"
+====    ====
+Phrase[_LT_GPLref15=#597]: (158) "(distribute|develop|offere?d?|licen[cs]ed|available|protected|covered|provided|subject|comes|\<(and|or)\>) =SOME= ([^al]gpl|gnu (general p|p)ublic licen[cs]e)"
+-->: "__"
+====    ====
+Phrase[_LT_GPL_OR=#622]: (78) "\<(either|or|alternately)\> =FEW= ([^al]gpl|GNU (general p|p)ublic licen[cs]e)"
+-->: "\<__\>__"
+====    ====
+Phrase[_LT_IGNORE_CLAUSE=#625]: (58) "to apply these terms =ANY= to (the|your) (program|library)"
+-->: "to apply these terms__to __ __"
+====    ====
+Phrase[_LT_INDEMN_2=#684]: (273) "(you|will|shall|must|hereby|effectively|expense|(agrees?|required) t(o|o forever)) (defend and i|i)ndemnif(y|y and defend) =SOME= (from|for) (and against a|a)n(y|y and all) (claim|cost|damage|demand|expense|fee|fine|judge?ment|lawsuit|legal|liabilit|loss|settle|suit|third)"
+-->: "__ __ndemnif__ __n__ __"
+====    ====
+Phrase[_LT_INDEMN_5=#687]: (297) "(you|will|shall|must|hereby|effectively|expense|(agrees?|required) t(o|o forever)) (defend indemnify|indemnify defend|indemnify) and hold =SOME= harmless (from|for) (and against a|a)n(y|y and all) (claim|cost|damage|demand|expense|fee|fine|judge?ment|lawsuit|legal|liabilit|loss|settle|suit|third)"
+-->: "__ __ and hold__harmless __ __n__ __"
+====    ====
+Phrase[_LT_INDEMN_6=#688]: (297) "(you|will|shall|must|hereby|effectively|expense|(agrees?|required) t(o|o forever)) (defend indemnify|indemnify defend|indemnify) and hold harmless =SOME= (from|for) (and against a|a)n(y|y and all) (claim|cost|damage|demand|expense|fee|fine|judge?ment|lawsuit|legal|liabilit|loss|settle|suit|third)"
+-->: "__ __ and hold harmless__ __n__ __"
+====    ====
+Phrase[_LT_INDEMN_7=#689]: (328) "(you|will|shall|must|hereby|effectively|expense|(agrees?|required) t(o|o forever)) (defend indemnify|indemnify defend|indemnify) and hold harmless =SOME= (city|coll|instit|univ) =SOME= (from|for) (and against a|a)n(y|y and all) (claim|cost|damage|demand|expense|fee|fine|judge?ment|lawsuit|legal|liabilit|loss|settle|suit|third)"
+-->: "__ __ and hold harmless__ __n__ __"
+====    ====
+Phrase[_LT_LGPL_NAMED2=#786]: (22) "[^-_]\<lgpl(v(2|3))?\>"
+-->: "[^-_]\<lgpl__?\>"
+====    ====
+Phrase[_LT_LGPL_OR=#787]: (135) "\<(either|or|alternately)\> =SOME= (lgpl|lesser GNU general public licen[cs]e|GNU (lesser|library) (gpl|(general p|p)ublic licen[cs]e))"
+-->: "\<__\>__"
+====    ====
+Phrase[_LT_MIT_NO_EVIL=#838]: (22) "(no|not|don't be) evil"
+-->: "__ evil"
+====    ====
+Phrase[_LT_JSON=#839]: (1) "."
+-->: "."
+====    ====
+Phrase[_LT_MPLref2=#860]: (145) "(distribute|develop|offere?d?|licen[cs]ed|available|protected|covered|provided|subject|comes) =SOME= ([[:space:]]mpl\>|mozilla public licen[cs]e)"
+-->: "__"
+====    ====
+Phrase[_LT_MPL_OR=#863]: (78) "\<(either|or|alternately)\> =FEW= ([[:space:]]mpl\>|mozilla public licen[cs]e)"
+-->: "\<__\>__"
+====    ====
+Phrase[_LT_MSCORP_LIMITEDref1=#880]: (82) "Microsoft Corporation =SOME= ((released|distributed) under|covered by)( the)? MLPL"
+-->: "Microsoft Corporation__? MLPL"
+====    ====
+Phrase[_LT_NPLref=#918]: (81) "(licen[cs]ed|governed|applicable|subject) =SOME= (NPL|netscape public licen[cs]e)"
+-->: "__"
+====    ====
+Phrase[_LT_OCCT_exception_10_1=#926]: (64) "Open CASCADE Exception \(version 1\.0\) to GNU LGPL version 2\.1"
+-->: "Open CASCADE Exception \__ to GNU LGPL version 2\.1"
+====    ====
+Phrase[_LT_OpenJDK_assembly_exception_10_2=#941]: (26) "OpenJDK Assembly Exception"
+-->: "OpenJDK Assembly Exception"
+====    ====
+Phrase[_LT_OPENSSLref5=#964]: (25) "openssl (toolkit|project)"
+-->: "openssl __"
+====    ====
+Phrase[_LT_PUBDOM_3=#1012]: (39) "(on|is|are|with) publica?l?ly available"
+-->: "__ publica?l?ly available"
+====    ====
+Phrase[_LT_W3C_19980720=#1206]: (55) "notice of any changes or modifications to the W3C files"
+-->: "notice of any changes or modifications to the W3C files"
+====    ====
+Phrase[_LT_ZZGEN_9=#1249]: (65) "(freel?y? r?e?-?distribut|distributed? free|distribute it freely)"
+-->: "__"
+====    ====
+Phrase[_LT_ZZGEN_40=#1280]: (74) "(can \<sell\>|can be sold|may \<sell\>|may be sold|to \<sell\>|to be sold)"
+-->: "__"
+====    ====
+Phrase[_LT_ZZGEN_42=#1282]: (49) "(mak|creat|generat|produc) =SOME= derivative work"
+-->: "__derivative work"
+====    ====
+Phrase[_LT_ZZNON_COMMERC1=#1283]: (84) "(not for commercial|non-?commercial|commercial =SOME= (limit|prohibit|[^n]restrict))"
+-->: "__"
+====    ====
+Phrase[_LT_SEE_COPYING_LICENSE_1=#1285]: (212) "see =FEW= (copyright notices?|license|legal notices?|copying|copyright\.?txt|license\.?txt|readme\.?txt|file) =FEW= (for|with|in|at) =FEW= (details|licens(e|ing)|distribut|information|folder|directory|https?|ftp)"
+-->: "see__"
+====    ====
+Phrase[_LT_SEE_COPYING_LICENSE_2=#1286]: (180) "for =FEW= (details|license|distribut|information|use|usage) =FEW= see =FEW= (copyright notices?|license|legal notices?|copying|copyright\.?txt|license\.?txt) =FEW= (for|with|in|at)"
+-->: "for__see__"
+====    ====
+Phrase[_LT_SEE_URL=#1287]: (100) "see (https?|ftp) =SOME= (for|with|in) =FEW= (details|license|distribut|information|folder|directory)"
+-->: "see __"
+====    ====
+Phrase[_LT_SEE_COPYING_FINAL1=#1304]: (89) "(distribut|copy|mod) =SOME= for details see the (file =FEW= \<copying\>|\<copying\> file)"
+-->: "__for details see the __"
+====    ====
+Phrase[_LT_SEE_COPYING_FINAL2=#1305]: (109) "see the (file =FEW= \<copying\>|\<copying\> file) =SOME= (distribut|dir|copy|us(e|age)|mod|free soft|details)"
+-->: "see the __"
+====    ====
+Phrase[_LT_SEE_OTHER_5=#1311]: (83) "subject to =SOME= (at|in) th(e (ur[il]|file)|e =FEW= (file|dir|media|note|pub|doc))"
+-->: "subject to__ th__"
+====    ====
+Phrase[_LT_SEE_OTHER_FINAL1=#1324]: (101) "(distribut|copy|mod) =SOME= for details see th(e (ur[il]|file)|e =FEW= (file|dir|media|note|pub|doc))"
+-->: "__for details see th__"
+====    ====
+Phrase[_LT_SEE_OTHER_FINAL2=#1325]: (113) "see th(e (ur[il]|file)|e =FEW= (file|dir|media|note|pub|doc)) =SOME= (distribut|dir|copy|us(e|age)|mod|free soft)"
+-->: "see th__"
+====    ====
+Phrase[_LT_SEE_OTHER_FINAL3=#1326]: (73) "see the (ur[il]|file) =SOME= (distribut|dir|copy|us(e|age)|mod|free soft)"
+-->: "see the __"
+====    ====
+Phrase[_LT_SEE_LICENSE_FINAL1=#1347]: (100) "(distribut|copy|mod) =SOME= for details see th(e|is) (file =FEW= \<licen[cs]e\>|\<licen[cs]e\> file)"
+-->: "__for details see th__ __"
+====    ====
+Phrase[_LT_SEE_LICENSE_FINAL2=#1348]: (107) "see the (file =FEW= \<licen[cs]e\>|\<licen[cs]e\> file) =SOME= (distribut|dir|copy|us(e|age)|mod|free soft)"
+-->: "see the __"
+====    ====
+Phrase[_LT_SEE_README_FINAL1=#1360]: (87) "(distribut|copy|mod) =SOME= for details see the (file =FEW= \<readme\>|\<readme\> file)"
+-->: "__for details see the __"
+====    ====
+Phrase[_LT_SEE_README_FINAL2=#1361]: (99) "see the (file =FEW= \<readme\>|\<readme\> file) =SOME= (distribut|dir|copy|us(e|age)|mod|free soft)"
+-->: "see the __"

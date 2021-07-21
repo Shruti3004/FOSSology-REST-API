@@ -1,0 +1,228 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>cp2foss - upload one or more files or archives into FOSSology and run scans.</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a>
+    <ul>
+      <li><a href="#Options">Options</a></li>
+      <li><a href="#Deprecated-Options">Deprecated Options</a></li>
+    </ul>
+  </li>
+  <li><a href="#EXAMPLES">EXAMPLES</a></li>
+  <li><a href="#AUTHOR">AUTHOR</a></li>
+  <li><a href="#SEE-ALSO">SEE ALSO</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>cp2foss - upload one or more files or archives into FOSSology and run scans.</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<pre><code> Usage: cp2foss [options] [archives]
+ Options: -AQThv [-f path] [-AA num] [-q {agent,agent.. | all}] [-X path]
+ [-n name] [-d description] [--username user name] [--password password]
+ [-c configuration directory] [-s Run synchronously]
+ [-P set public permission]
+ [-S upload from subversion repo] [-G upload from git repo] [--user user name for vcs] [--pass password for vcs]</code></pre>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p><b>cp2foss</b> (copy to FOSSology) will load one or more files or archives into the folder path specified by <b>-f</b>. The folders in the <i>folder-path</i> do not need to exist. <b>cp2foss</b> will create them as needed.</p>
+
+<p>Archives can be a file, directory or URL to the archive. If the archive is a URL, then it is retrieved and added. If the archive is a file, then it is used as the source to add. If the archive is a directory, then <i>all</i> files under it are recursively added.</p>
+
+<p>The archive support globbing - &#39;*&#39;, all the matched files will be added. Note: have to put it in single/double quotes, e.g. &#39;*.php&#39;</p>
+
+<p>A single hyphen means the archive list will come from standard in (stdin).</p>
+
+<h2 id="Options">Options</h2>
+
+<p><b>NOTE:</b> The order of the options is significant. Options are processed in the order that they are used on the command line.</p>
+
+<dl>
+
+<dt id="A"><b>-A</b></dt>
+<dd>
+
+<p>Turn on <i>alpha-folders</i>. Default is <b>off</b>. When many archives are loaded, navigating through all the folders can be difficult. This option groups packages under alpha folders based on the first letter of the package name. For example, your folder path is <i>ProjX/pass1/</i>. Using alpha-folders the archive <code>andyroid</code> would end up under a folder path <i>ProjX/pass/a-c/andyroid</i>.</p>
+
+</dd>
+<dt id="AA-num"><b>-AA num</b></dt>
+<dd>
+
+<p>Specify the number of letters per folder (default: 3); implies -A. For example, using the default, the alpha folders would be a-c, d-f, g-i and so on.</p>
+
+</dd>
+<dt id="d-description"><b>-d</b> <i>description</i></dt>
+<dd>
+
+<p>A short meaningful description the captures what the upload folder will contain. Description must be quoted with either single or double quotes. This is ignored if you are uploading a directory.</p>
+
+</dd>
+<dt id="f-path"><b>-f</b> <i>path</i></dt>
+<dd>
+
+<p>folder path for storing uploaded files (e.g., -f &#39;Fedora/ISOs/Disk 1&#39;). You do not need to specify your top level folder. All paths are under the user top level folder. <b>cp2foss</b> will correctly create all of the other intermediate folders in the path under the top folder.</p>
+
+</dd>
+<dt id="pod"><b>-?</b></dt>
+<dd>
+
+<p>Help, see -h</p>
+
+</dd>
+<dt id="h"><b>-h</b></dt>
+<dd>
+
+<p>Help, prints a verbose usage message.</p>
+
+</dd>
+<dt id="username-username"><b>--username</b> <i>username</i></dt>
+<dd>
+
+<p>username, specify the username for a user who has the priviledge to execute cp2foss. Alternatively, you can add the file .fossology.rc in your current home directory, add user name and password in 2 separate lines.</p>
+
+</dd>
+<dt id="password-password"><b>--password</b> <i>password</i></dt>
+<dd>
+
+<p>password, specify the password for a user who has the priviledge to execute cp2foss. Alternatively, you can add the file .fossology.rc in your current home directory, add user name and password in 2 separate lines.</p>
+
+</dd>
+<dt id="c-configuration-directory"><b>-c</b> <i>configuration directory</i></dt>
+<dd>
+
+<p>Specify the directory for the system configuration, when installation from src, default dir is /usr/local/etc/fossology/, when installation from package, default dir is /etc/fossology/. This defaults to your last installation location.</p>
+
+</dd>
+<dt id="P-set-public-permission"><b>-P</b> <i>set public permission</i></dt>
+<dd>
+
+<p>set the permission to public on this upload or not. 1: yes; 0: no</p>
+
+</dd>
+<dt id="s-Run-synchronously"><b>-s</b> <i>Run synchronously</i></dt>
+<dd>
+
+<p>Run synchronously. Don&#39;t return until archive already in FOSSology repository. If the archive is a file (see below), then the file can be safely removed.</p>
+
+</dd>
+<dt id="n-name"><b>-n</b> <i>name</i></dt>
+<dd>
+
+<p>An optional name that will be used to store the upload in the database. The default name is the filename from the upload. Must be set before each archive. Ignored if you specify a directory to upload.</p>
+
+</dd>
+<dt id="Q"><b>-Q</b></dt>
+<dd>
+
+<p>List all available processing agents. Any or all of the agents listed can be used with the <b>-q</b> option. See <b>-q</b> for more details.</p>
+
+</dd>
+<dt id="q-agent-list-all"><b>-q</b> <i>agent-list | all</i></dt>
+<dd>
+
+<p>Indicate what processing agents to use in analyzing the upload. The list is specified as a comma-separated list of agents, (use -Q to display the list of agents), or the word <i>all</i>. If -q is not used, the item will still be uploaded and unpacked. To schedule agent jobs later see <b>fossjobs</b> or use the FOSSology web interface.</p>
+
+</dd>
+<dt id="T"><b>-T</b></dt>
+<dd>
+
+<p>TEST. (for Debugging) No database or repository updates are performed. Test mode enables verbose mode. This is a trial run of the actions that cp2foss will do.</p>
+
+</dd>
+<dt id="v"><b>-v</b></dt>
+<dd>
+
+<p>Verbose (for debugging). Details the actions being performed. <b>-T</b> turns this on automatically.</p>
+
+</dd>
+<dt id="X"><b>-X</b></dt>
+<dd>
+
+<p>Items to exclude when the input archive is a directory. You can specify more than one -X. For example, to exclude all svn and cvs directories, include the following before the archive&#39;s directory path: -X .svn -X .cvs</p>
+
+</dd>
+</dl>
+
+<h2 id="Deprecated-Options">Deprecated Options</h2>
+
+<dl>
+
+<dt id="a-archive"><b>-a</b> <i>archive</i></dt>
+<dd>
+
+<p>See <b>Description</b> above.</p>
+
+</dd>
+<dt id="p-path"><b>-p</b> <i>path</i></dt>
+<dd>
+
+<p>see <b>-f</b></p>
+
+</dd>
+<dt id="R"><b>-R</b></dt>
+<dd>
+
+<p>Ignored.</p>
+
+</dd>
+<dt id="w"><b>-w</b></dt>
+<dd>
+
+<p>Ignored.</p>
+
+</dd>
+<dt id="W"><b>-W</b></dt>
+<dd>
+
+<p>Ignored.</p>
+
+</dd>
+</dl>
+
+<h1 id="EXAMPLES">EXAMPLES</h1>
+
+<p><code>cp2foss --username USER --password PASSWORD -f Folder -d &#39;the first file&#39; /tmp/file </code></p>
+
+<p>Would load the archive <i>file</i> in the folder <i>Folder</i> using the supplied descriptions for the upload.</p>
+
+<p><code>cp2foss --username USER --password PASSWORD -q all -p Ubuntu -n &#39;Gutsy Gibon&#39; -d &#39;Ubuntu Gutsy 7.10&#39; &#39;http://ubuntu.cs.utah.edu/releases/gutsy/ubuntu-7.10-desktop-i386.iso&#39; </code></p>
+
+<p>The above example, <b>cp2foss</b> will first get the archive using wget. It will then load the downloaded archive into the database calling the upload &#39;Gutsy Gibon&#39;.</p>
+
+<p><code>cp2foss --username USER --password PASSWORD -A -f Fedora/Fedora8 -n Fedora8 -d &#39;Fedora 8 Sources&#39; -X .svn -X .cvs /bigdisk/fedora</code></p>
+
+<p>Loads every file under the /bigdisk/fedora directory, except files in the Subversion and CVS directories. The files are placed in the UI under the folder &quot;Fedora/Fedora8&quot; and are grouped by the first letter of each file (a-c, d-f, g-h, etc.).</p>
+
+<p><code>cp2foss --username USER --password PASSWORD -d &#39;globbing test&#39; &#39;/tmp/*.php&#39; </code></p>
+
+<p>The above example, will upload all the php files in /tmp.</p>
+
+<h1 id="AUTHOR">AUTHOR</h1>
+
+<p>Neal Krawetz/Mark Donohoe for the Hewlett-Packard Company</p>
+
+<h1 id="SEE-ALSO">SEE ALSO</h1>
+
+<p>fossjobs</p>
+
+
+</body>
+
+</html>
+
+

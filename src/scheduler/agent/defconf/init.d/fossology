@@ -1,0 +1,96 @@
+#!/bin/sh
+# Init script for the fossology scheduler.
+# Copyright (C) 2011 Hewlett-Packard Development Company, L.P.
+#
+# Based on the example skeleton:
+#	Written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#	Modified for Debian by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#
+### BEGIN INIT INFO
+# Provides:          fossology
+# Required-Start:    $network $local_fs $remote_fs $syslog $named
+# Required-Stop:     $network $local_fs $remote_fs $syslog $named
+# Should-Start:      postgresql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: FOSSology scheduler daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/share/fossology/scheduler/agent/fo_scheduler
+CLI=/usr/local/share/fossology/scheduler/agent/fo_cli
+NAME=fossology
+DESC="FOSSology job scheduler"
+
+# Include default init-functions for Debian
+[ -e /lib/lsb/init-functions ] && . /lib/lsb/init-functions
+
+test -x $DAEMON || exit 0
+
+# default is to run, can be overridden in defaults
+ENABLED=1
+
+# Include scheduler defaults if available
+SCHEDULEROPT="--daemon --reset --verbose=1"
+if [ -f /usr/local/etc/fossology/default/fossology ] ; then
+    # This can override SCHEDULEROPT.
+    # Be sure to keep "-d" for daemon mode
+    . /usr/local/etc/fossology/default/fossology
+fi
+
+# Quit quietly, if $ENABLED is 0.
+test "$ENABLED" != "0" || exit 0
+
+set -e
+
+start () {
+    echo -n "Starting $DESC: "
+    $DAEMON $SCHEDULEROPT
+    echo "$NAME."
+}
+
+stop () {
+    echo -n "Stopping $DESC: "
+    # we don't really care about the exit code as long as it's stopped
+    $DAEMON --kill || echo -n "no "
+    echo "$NAME killed."
+}
+
+gracefulstop () {
+    echo -n "Gracefully shutting down $DESC after all current jobs finish: "
+    # we don't really care about the exit code as long as it's stopped
+    $DAEMON --shutdown
+    echo "$NAME shutdown."
+}
+
+reload () {
+    $CLI --reload
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  graceful-stop)
+    gracefulstop
+    ;;
+  restart)
+    echo -n "Restarting $DESC: "
+    stop
+    sleep 1
+    start
+    ;;
+  reload|force-reload)
+    reload
+    ;;
+  *)
+    N=/etc/init.d/$NAME
+    echo "Usage: $N {start|stop|graceful-stop|restart|reload|force-reload}" >&2
+    exit 1
+	;;
+esac
+
+exit 0

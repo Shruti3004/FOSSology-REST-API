@@ -1,0 +1,88 @@
+/*
+ Copyright (C) 2014, Siemens AG
+ Author: Johannes Najjar
+ 
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ version 2 as published by the Free Software Foundation.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+function setCookie(cookieName, cookieValue, exdays) {
+  exdays = typeof exdays !== 'undefined' ? exdays : 1;
+  var date = new Date();
+  date.setTime(date.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  var expires = "expires=" + date.toUTCString();
+  document.cookie = cookieName + "=" + cookieValue + "; " + expires;
+}
+
+function getCookie(cookieName) {
+  var name = cookieName + "=";
+  var allCookies = document.cookie.split(';');
+  for (var i = 0; i < allCookies.length; i++) {
+    var theCookie = allCookies[i];
+    while (theCookie.charAt(0) == ' ') {
+      theCookie = theCookie.substring(1);
+    }
+    if (theCookie.indexOf(name) != -1) {
+      return theCookie.substring(name.length, theCookie.length);
+    }
+  }
+  return "";
+}
+
+function setOption(name, value) {
+  setCookie("option." + name, value, 1);
+}
+
+function getOption(name) {
+  return getCookie("option." + name);
+}
+
+function getOptionDefaultTrue(name) {
+  var theCookie = getCookie("option." + name);
+  if (theCookie === "") {
+    return true;
+  }
+  else {
+    return theCookie === "true";
+  }
+}
+
+function failed(jqXHR, textStatus, error) {
+  var err = textStatus + ", " + error;
+  console.log("Request Failed: " + err);
+  respondTxt = jqXHR.responseText;
+  if (respondTxt.indexOf('Module unavailable or your login session timed out.') != 0) {
+    $('#dmessage').append(respondTxt);
+    $('#dmessage').css('display', 'block');
+  }
+  else if (confirm("You are not logged in. Go to login page?")) {
+    window.location.href = "?mod=auth";
+  }
+}
+
+function rmDefaultText(caller, dflt) {
+  if ($(caller).val() == dflt) {
+    $(caller).val('');
+  }
+}
+
+function sortList(selector)
+{
+    var options = $(selector);
+    var arr = options.map(function(_, o) { return { t: $(o).text(), v: o.value }; }).get();
+    arr.sort(function(o1, o2) { return o1.t.toLowerCase() > o2.t.toLowerCase() ? 1 : o1.t.toLowerCase() < o2.t.toLowerCase() ? -1 : 0; });
+    options.each(function(i, o) {
+        o.value = arr[i].v;
+        $(o).text(arr[i].t);
+    });
+}
