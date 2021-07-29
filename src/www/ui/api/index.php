@@ -51,7 +51,7 @@ use Slim\App;
 
 const REST_VERSION_SLUG = "restVersion";
 
-const VERSION_1   = "/v{" . REST_VERSION_SLUG . ":1}/";
+const VERSION_2   = "/v{" . REST_VERSION_SLUG . ":2}/";
 
 const AUTH_METHOD = "JWT_TOKEN";
 
@@ -107,7 +107,7 @@ if ($dbConnected) {
 } else {
   // DB not connected
   // Respond to health request as expected
-  $app->get(VERSION_1 . 'health', function($req, $res) {
+  $app->get(VERSION_2 . 'health', function($req, $res) {
     $handler = new InfoController($GLOBALS['container']);
     return $handler->getHealth($req, $res, -1);
   });
@@ -123,13 +123,13 @@ if ($dbConnected) {
 }
 
 //////////////////////////OPTIONS/////////////////////
-$app->options(VERSION_1 . '{routes:.+}', AuthController::class . ':optionsVerification');
+$app->options(VERSION_2 . '{routes:.+}', AuthController::class . ':optionsVerification');
 
 //////////////////////////AUTH/////////////////////
-$app->post(VERSION_1 . 'tokens', AuthController::class . ':createNewJwtToken');
+$app->post(VERSION_2 . 'tokens', AuthController::class . ':createNewJwtToken');
 
 //////////////////////////UPLOADS/////////////////////
-$app->group(VERSION_1 . 'uploads',
+$app->group(VERSION_2 . 'uploads',
   function (){
     $this->get('[/{id:\\d+}]', UploadController::class . ':getUploads');
     $this->delete('/{id:\\d+}', UploadController::class . ':deleteUpload');
@@ -142,7 +142,7 @@ $app->group(VERSION_1 . 'uploads',
   });
 
 ////////////////////////////ADMIN-USERS/////////////////////
-$app->group(VERSION_1 . 'users',
+$app->group(VERSION_2 . 'users',
   function (){
     $this->get('[/{id:\\d+}]', UserController::class . ':getUsers');
     $this->delete('/{id:\\d+}', UserController::class . ':deleteUser');
@@ -151,14 +151,14 @@ $app->group(VERSION_1 . 'users',
   });
 
 ////////////////////////////GROUPS/////////////////////
-$app->group(VERSION_1 . 'groups',
+$app->group(VERSION_2 . 'groups',
 function (){
   $this->get('', GroupController::class . ':getGroups');
   $this->post('', GroupController::class . ':createGroup');
 });
 
 ////////////////////////////JOBS/////////////////////
-$app->group(VERSION_1 . 'jobs',
+$app->group(VERSION_2 . 'jobs',
   function (){
     $this->get('[/{id:\\d+}]', JobController::class . ':getJobs');
     $this->post('', JobController::class . ':createJob');
@@ -166,13 +166,13 @@ $app->group(VERSION_1 . 'jobs',
   });
 
 ////////////////////////////SEARCH/////////////////////
-$app->group(VERSION_1 . 'search',
+$app->group(VERSION_2 . 'search',
   function (){
     $this->get('', SearchController::class . ':performSearch');
   });
 
 ////////////////////////////FOLDER/////////////////////
-$app->group(VERSION_1 . 'folders',
+$app->group(VERSION_2 . 'folders',
   function (){
     $this->get('[/{id:\\d+}]', FolderController::class . ':getFolders');
     $this->post('', FolderController::class . ':createFolder');
@@ -183,7 +183,7 @@ $app->group(VERSION_1 . 'folders',
   });
 
 ////////////////////////////REPORT/////////////////////
-$app->group(VERSION_1 . 'report',
+$app->group(VERSION_2 . 'report',
   function (){
     $this->get('', ReportController::class . ':getReport');
     $this->get('/{id:\\d+}', ReportController::class . ':downloadReport');
@@ -191,28 +191,28 @@ $app->group(VERSION_1 . 'report',
   });
 
 ////////////////////////////INFO/////////////////////
-$app->group(VERSION_1 . 'version',
+$app->group(VERSION_2 . 'version',
   function (){
     $this->get('', InfoController::class . ':getInfo');
   });
-$app->group(VERSION_1 . 'info',
+$app->group(VERSION_2 . 'info',
   function (){
     $this->get('', InfoController::class . ':getInfo');
   });
-$app->group(VERSION_1 . 'health',
+$app->group(VERSION_2 . 'health',
   function (){
     $this->get('', InfoController::class . ':getHealth');
   });
 
 /////////////////////////FILE SEARCH////////////////////
-$app->group(VERSION_1 . 'filesearch',
+$app->group(VERSION_2 . 'filesearch',
   function (){
     $this->post('', FileSearchController::class . ':getFiles');
     $this->any('/{params:.*}', BadRequestController::class);
   });
 
 /////////////////////////LICENSE SEARCH/////////////////
-$app->group(VERSION_1 . 'license',
+$app->group(VERSION_2 . 'license',
   function (){
     $this->get('', LicenseController::class . ':getAllLicenses');
     $this->post('', LicenseController::class . ':createLicense');
