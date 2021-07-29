@@ -55,6 +55,8 @@ class SearchController extends RestController
     $license = $request->getHeaderLine("license");
     $copyright = $request->getHeaderLine("copyright");
     $uploadId = $request->getHeaderLine("uploadId");
+    $limit = $request->getHeaderLine("limit");
+    $page = $request->getHeaderLine("page");
 
     // set searchtype to search allfiles by default
     if (empty($searchType)) {
@@ -64,6 +66,16 @@ class SearchController extends RestController
     // set uploadId to 0 - search in all files
     if (empty($uploadId)) {
       $uploadId = 0;
+    }
+
+    // set page to 1 by default
+    if (empty($page)) {
+      $page = 1;
+    }
+
+    // set limit to 100 by default
+    if (empty($limit)) {
+      $limit = 100;
     }
 
     /*
@@ -89,11 +101,12 @@ class SearchController extends RestController
     }
 
     $item = GetParm("item", PARM_INTEGER);
-    $results = GetResults($item, $filename, $uploadId, $tag, 0,
+    list($results, $totalPages) = GetResults($item, $filename, $uploadId, $tag, $page - 1,
       $filesizeMin, $filesizeMax, $searchType, $license, $copyright,
       $this->restHelper->getUploadDao(), $this->restHelper->getGroupId(),
-      $GLOBALS['PG_CONN'])[0];
+      $GLOBALS['PG_CONN'], $limit);
 
+    $totalPages = intval(ceil($totalPages / $limit));
     $searchResults = [];
     // rewrite it and add additional information about it's parent upload
     for ($i = 0; $i < sizeof($results); $i ++) {
@@ -110,6 +123,6 @@ class SearchController extends RestController
       $currentResult = new SearchResult($currentUpload, $uploadTreePk, $filename);
       $searchResults[] = $currentResult->getArray();
     }
-    return $response->withJson($searchResults, 200);
+    return $response->withHeader("X-Total-Pages", $totalPages)->withJson($searchResults, 200);
   }
 }
