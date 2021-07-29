@@ -19,7 +19,7 @@
 /**
  * \file bootstrap.php
  * \brief Fossology system bootstrap
- * This file may be DUPLICATED in any php utility that needs to 
+ * This file may be DUPLICATED in any php utility that needs to
  * bootstrap itself.  But try to use fo_wrapper instead.
  */
 
@@ -29,7 +29,7 @@
  *  - parse fossology.conf
  *  - source template (require_once template-plugin.php)
  *  - source common files (require_once common.php)
- * 
+ *
  * The following precedence is used to resolve SYSCONFDIR:
  *  - SYSCONFDIR path passed in ($sysconfdir)
  *  - environment variable SYSCONFDIR
@@ -48,7 +48,7 @@
  * The global SYSCONFDIR is also set for backward compatibility.
  *
  * \Note Since so many files expect directory paths that used to be in pathinclude.php
- * to be global, this function will define the same globals (everything in the 
+ * to be global, this function will define the same globals (everything in the
  * DIRECTORIES section of fossology.conf).
  */
 function bootstrap($sysconfdir="")
@@ -56,14 +56,13 @@ function bootstrap($sysconfdir="")
   $GLOBALS["PG_CONN"] = NULL;
   $rcfile = "fossology.rc";
 
-  if (empty($sysconfdir))
-  {
+  if (empty($sysconfdir)) {
     $sysconfdir = getenv('SYSCONFDIR');
-    if ($sysconfdir === false)
-    {
-      if (file_exists($rcfile)) $sysconfdir = file_get_contents($rcfile);
-      if ($sysconfdir === false)
-      {
+    if ($sysconfdir === false) {
+      if (file_exists($rcfile)) {
+        $sysconfdir = file_get_contents($rcfile);
+      }
+      if ($sysconfdir === false) {
         $sysconfdir = "/usr/local/etc/fossology";
       }
     }
@@ -74,15 +73,13 @@ function bootstrap($sysconfdir="")
 
   /*************  Parse fossology.conf *******************/
   $ConfFile = "{$sysconfdir}/fossology.conf";
-  if (!file_exists($ConfFile))
-  {
+  if (!file_exists($ConfFile)) {
     $text = _("FATAL! Missing configuration file: $ConfFile");
     echo "$text\n";
     exit(1);
   }
   $SysConf = parse_ini_file($ConfFile, true);
-  if ($SysConf === false)
-  {
+  if ($SysConf === false) {
     $text = _("FATAL! Invalid configuration file: $ConfFile");
     echo "$text\n";
     exit(1);
@@ -92,10 +89,9 @@ function bootstrap($sysconfdir="")
    * For example, if PREFIX=/usr/local and BINDIR=PREFIX/bin, we
    * want BINDIR=/usr/local/bin
    */
-  foreach($SysConf['DIRECTORIES'] as $var=>$assign)
-  {
+  foreach ($SysConf['DIRECTORIES'] as $var=>$assign) {
     /* Evaluate the individual variables because they may be referenced
-     * in subsequent assignments. 
+     * in subsequent assignments.
      */
     $toeval = "\$$var = \"$assign\";";
     eval($toeval);
@@ -106,10 +102,9 @@ function bootstrap($sysconfdir="")
   }
 
   $moddir = $SysConf['DIRECTORIES']['MODDIR'];
-  if (empty($moddir))
-  {
+  if (empty($moddir)) {
     $text = _("FATAL! System initialization failure: MODDIR not defined in $SysConf");
-    echo $text. "\n"; 
+    echo $text. "\n";
     exit(1);
   }
 

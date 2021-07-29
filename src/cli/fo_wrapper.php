@@ -38,8 +38,7 @@ $Plugins = array();
 /* Set SYSCONFDIR and set global (for backward compatibility) */
 /** get sysconfdir */
 $sysconfdir = "";
-for ($i = 1;$i < $argc;$i++)
-{
+for ($i = 1;$i < $argc;$i++) {
   $arg = $argv[$i];
   if ("-c" === $arg) {
     $sysconfdir = $argv[$i + 1];
@@ -56,8 +55,7 @@ $projectGroup = $SysConf['DIRECTORIES']['PROJECTGROUP'] ?: 'fossy';
 $gInfo = posix_getgrnam($projectGroup);
 posix_setgid($gInfo['gid']);
 $groups = `groups`;
-if (!preg_match("/\s$projectGroup\s/",$groups) && (posix_getgid() != $gInfo['gid']))
-{
+if (!preg_match("/\s$projectGroup\s/",$groups) && (posix_getgid() != $gInfo['gid'])) {
   print "FATAL: You must be in group '$projectGroup'.\n";
   exit(1);
 }
@@ -115,14 +113,13 @@ function bootstrap($sysconfdir="")
   error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
   $rcfile = "fossology.rc";
-  if (empty($sysconfdir))
-  {
+  if (empty($sysconfdir)) {
     $sysconfdir = getenv('SYSCONFDIR');
-    if ($sysconfdir === false)
-    {
-      if (file_exists($rcfile)) $sysconfdir = file_get_contents($rcfile);
-      if ($sysconfdir === false)
-      {
+    if ($sysconfdir === false) {
+      if (file_exists($rcfile)) {
+        $sysconfdir = file_get_contents($rcfile);
+      }
+      if ($sysconfdir === false) {
         /** set the sysconfdir with default */
         $sysconfdir = "/usr/local/etc/fossology";
       }
@@ -134,15 +131,13 @@ function bootstrap($sysconfdir="")
 
   /*************  Parse fossology.conf *******************/
   $ConfFile = "{$sysconfdir}/fossology.conf";
-  if (!file_exists($ConfFile))
-  {
+  if (!file_exists($ConfFile)) {
     $text = _("FATAL! Missing configuration file: $ConfFile");
     echo "$text\n";
     exit(1);
   }
   $SysConf = parse_ini_file($ConfFile, true);
-  if ($SysConf === false)
-  {
+  if ($SysConf === false) {
     $text = _("FATAL! Invalid configuration file: $ConfFile");
     echo "$text\n";
     exit(1);
@@ -152,8 +147,7 @@ function bootstrap($sysconfdir="")
    * For example, if PREFIX=/usr/local and BINDIR=$PREFIX/bin, we
    * want BINDIR=/usr/local/bin
    */
-  foreach($SysConf['DIRECTORIES'] as $var=>$assign)
-  {
+  foreach ($SysConf['DIRECTORIES'] as $var=>$assign) {
     /* Evaluate the individual variables because they may be referenced
      * in subsequent assignments.
      */
@@ -165,8 +159,7 @@ function bootstrap($sysconfdir="")
     $GLOBALS[$var] = ${$var};
   }
 
-  if (empty($MODDIR))
-  {
+  if (empty($MODDIR)) {
     $text = _("FATAL! System initialization failure: MODDIR not defined in $SysConf");
     echo $text. "\n";
     exit(1);
