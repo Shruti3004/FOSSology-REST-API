@@ -550,18 +550,21 @@ paths:
         - Search
       description: Search the FOSSology for a specific file
       parameters:
-        - name: limit
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-          in: header
         - name: page
+          description: Page number to fetch
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          description: Limits of responses per request
+          in: header
           required: false
           schema:
             type: integer
             minimum: 1
-          in: header
+            default: 100
         - name: groupName
           description: The group name to chose while performing search
           in: header
