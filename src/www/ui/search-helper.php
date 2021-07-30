@@ -37,9 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  *         ufile_name
  */
 function GetResults($Item, $Filename, $Upload, $tag, $Page, $SizeMin, $SizeMax, $searchtype,
-                    $License, $Copyright, $uploadDao, $groupID, $PG_CONN)
+                    $License, $Copyright, $uploadDao, $groupID, $PG_CONN, $limit = 100)
 {
-  $MaxPerPage  = 100;  /* maximum number of result items per page */
+  $MaxPerPage  = $limit;  /* maximum number of result items per page */
   $UploadtreeRecs = array();  // uploadtree record array to return
   $totalUploadtreeRecs = array();  // total uploadtree record array
   $totalUploadtreeRecsCount = 0; // total uploadtree records count to return
