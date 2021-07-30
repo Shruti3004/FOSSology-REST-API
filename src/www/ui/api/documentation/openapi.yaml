@@ -22,7 +22,7 @@ info:
     name: GPL-2.0-only
     url: https://github.com/fossology/fossology/blob/master/LICENSE
 servers:
-  - url: http://localhost/repo/api/v1
+  - url: http://localhost/repo/api/v2
     description: Localhost instance
 security:
   - bearerAuth: []
