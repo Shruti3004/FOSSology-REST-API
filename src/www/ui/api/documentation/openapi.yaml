@@ -689,14 +689,14 @@ paths:
             application/json:
               schema:
                 allOf:
+                  - $ref: '#/components/schemas/User'
                   - type: object
                     properties:
-                      defaultGroup:
+                      default_group:
                         type: string
                         description: Default group of the user
                         example:
                           "fossy"
-                  - $ref: '#/components/schemas/User'
         default:
           $ref: '#/components/responses/defaultResponse'
   /jobs:
