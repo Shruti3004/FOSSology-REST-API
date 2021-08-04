@@ -1938,6 +1938,25 @@ components:
               type: string
               description: Link to license
           description: Licensing of API
+        fossology:
+          type: object
+          properties:
+            version:
+              type: string
+              description: Build version
+            buildDate:
+              type: string
+              description: Build date
+            commitHash:
+              type: string
+              description: Commit hash
+            commitDate:
+              type: string
+              description: Commit date
+            branchName:
+              type: string
+              description: Branch name
+          description: Version information of fossology
     HeathInfo:
       description: Health status of server
       type: object
