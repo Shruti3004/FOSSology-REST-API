@@ -36,8 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  *         contains uploadtree_pk, parent, upload_fk, pfile_fk, ufile_mode, and
  *         ufile_name
  */
-function GetResults($Item, $Filename, $Upload, $tag, $Page, $SizeMin, $SizeMax, $searchtype,
-                    $License, $Copyright, $uploadDao, $groupID, $PG_CONN, $limit = 100)
+function GetResults($Item, $Filename, $Upload, $tag, $Page = 1, $SizeMin, $SizeMax, $searchtype,
+                    $License, $Copyright, $uploadDao, $groupID, $PG_CONN, $limit)
 {
   $MaxPerPage  = $limit;  /* maximum number of result items per page */
   $UploadtreeRecs = array();  // uploadtree record array to return
@@ -235,7 +235,7 @@ function GetResults($Item, $Filename, $Upload, $tag, $Page, $SizeMin, $SizeMax, 
     }
   }
 
-  $Offset = $Page * $MaxPerPage;
+  $Offset = ($Page - 1) * $MaxPerPage;
   $SQL .= " ORDER BY ufile_name, uploadtree.pfile_fk";
   $result = pg_query($PG_CONN, $SQL);
   DBCheckResult($result, $SQL, __FILE__, __LINE__);

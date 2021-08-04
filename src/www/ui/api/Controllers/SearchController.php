@@ -45,6 +45,22 @@ class SearchController extends RestController
    * @param array $args
    * @return ResponseInterface
    */
+
+  /**
+   * Get query parameter name for page listing
+   */
+  const PAGE_PARAM = "page";
+
+  /**
+   * Get query parameter name for limiting listing
+   */
+  const LIMIT_PARAM = "limit";
+
+  /**
+   * Limit of uploads in get query
+   */
+  const SEARCH_FETCH_LIMIT = 100;
+
   public function performSearch($request, $response, $args)
   {
     $searchType = $request->getHeaderLine("searchType");
@@ -55,8 +71,31 @@ class SearchController extends RestController
     $license = $request->getHeaderLine("license");
     $copyright = $request->getHeaderLine("copyright");
     $uploadId = $request->getHeaderLine("uploadId");
-    $limit = $request->getHeaderLine("limit");
-    $page = $request->getHeaderLine("page");
+    $retVal = null;
+
+    $page = $request->getHeaderLine(self::PAGE_PARAM);
+    if (! empty($page) || $page == "0") {
+      $page = filter_var($page, FILTER_VALIDATE_INT);
+      if ($page <= 0) {
+        $info = new Info(400, "page should be positive integer > 0",
+          InfoType::ERROR);
+        $retVal = $response->withJson($info->getArray(), $info->getCode());
+      }
+    } else {
+      $page = 1;
+    }
+
+    $limit = $request->getHeaderLine(self::LIMIT_PARAM);
+    if (! empty($limit)) {
+      $limit = filter_var($limit, FILTER_VALIDATE_INT);
+      if ($limit < 1) {
+        $info = new Info(400, "limit should be positive integer > 1",
+          InfoType::ERROR);
+        $retVal = $response->withJson($info->getArray(), $info->getCode());
+      }
+    } else {
+      $limit = self::SEARCH_FETCH_LIMIT;
+    }
 
     // set searchtype to search allfiles by default
     if (empty($searchType)) {
@@ -66,16 +105,6 @@ class SearchController extends RestController
     // set uploadId to 0 - search in all files
     if (empty($uploadId)) {
       $uploadId = 0;
-    }
-
-    // set page to 1 by default
-    if (empty($page)) {
-      $page = 1;
-    }
-
-    // set limit to 100 by default
-    if (empty($limit)) {
-      $limit = 100;
     }
 
     /*
@@ -100,13 +129,24 @@ class SearchController extends RestController
       return $response->withJson($returnVal->getArray(), $returnVal->getCode());
     }
 
+    if ($retVal !== null) {
+      return $retVal;
+    }
+
     $item = GetParm("item", PARM_INTEGER);
-    list($results, $totalPages) = GetResults($item, $filename, $uploadId, $tag, $page - 1,
+    list($results, $totalPages) = GetResults($item, $filename, $uploadId, $tag, $page -1,
       $filesizeMin, $filesizeMax, $searchType, $license, $copyright,
       $this->restHelper->getUploadDao(), $this->restHelper->getGroupId(),
       $GLOBALS['PG_CONN'], $limit);
 
     $totalPages = intval(ceil($totalPages / $limit));
+    if ($page > $totalPages) {
+      $info = new Info(400, "Can not exceed total pages: $totalPages",
+        InfoType::ERROR);
+      return $response->withHeader("X-Total-Pages", $totalPages)
+        ->withJson($info->getArray(), $info->getCode());
+    }
+
     $searchResults = [];
     // rewrite it and add additional information about it's parent upload
     for ($i = 0; $i < sizeof($results); $i ++) {
