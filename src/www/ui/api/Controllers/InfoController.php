@@ -68,9 +68,9 @@ class InfoController extends RestController
     $branchName = "";
     if (array_key_exists('BUILD', $SysConf)) {
       $fossologyVersion = $SysConf['BUILD']['VERSION'];
-      $buildDate = $SysConf['BUILD']['BUILD_DATE'];
+      $buildDate = date_create_from_format('Y/m/d H:i e', $SysConf['BUILD']['BUILD_DATE'])->format('c');
       $commitHash = $SysConf['BUILD']['COMMIT_HASH'];
-      $commitDate = $SysConf['BUILD']['COMMIT_DATE'];
+      $commitDate = date_create_from_format('Y/m/d H:i e', $SysConf['BUILD']['COMMIT_DATE'])->format('c');
       $branchName = $SysConf['BUILD']['BRANCH'];
     }
     return $response->withJson(array(
