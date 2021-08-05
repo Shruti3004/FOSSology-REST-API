@@ -60,6 +60,19 @@ class InfoController extends RestController
     foreach ($yamlDocArray["security"] as $secMethod) {
       $security[] = key($secMethod);
     }
+    global $SysConf;
+    $fossologyVersion = "";
+    $buildDate = "";
+    $commitHash = "";
+    $commitDate = "";
+    $branchName = "";
+    if (array_key_exists('BUILD', $SysConf)) {
+      $fossologyVersion = $SysConf['BUILD']['VERSION'];
+      $buildDate = date_create_from_format('Y/m/d H:i e', $SysConf['BUILD']['BUILD_DATE'])->format('c');
+      $commitHash = $SysConf['BUILD']['COMMIT_HASH'];
+      $commitDate = date_create_from_format('Y/m/d H:i e', $SysConf['BUILD']['COMMIT_DATE'])->format('c');
+      $branchName = $SysConf['BUILD']['BRANCH'];
+    }
     return $response->withJson(array(
       "name" => $apiTitle,
       "description" => $apiDescription,
@@ -69,6 +82,13 @@ class InfoController extends RestController
       "license" => [
         "name" => $apiLicense["name"],
         "url" => $apiLicense["url"]
+      ],
+      "fossology" => [
+        'version' => $fossologyVersion,
+        'buildDate' => $buildDate,
+        'commitHash' => $commitHash,
+        'commitDate' => $commitDate,
+        'branchName' => $branchName
       ]
     ), 200);
   }
