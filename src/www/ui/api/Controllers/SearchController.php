@@ -134,7 +134,7 @@ class SearchController extends RestController
     }
 
     $item = GetParm("item", PARM_INTEGER);
-    list($results, $totalPages) = GetResults($item, $filename, $uploadId, $tag, $page -1,
+    list($results, $totalPages) = GetResults($item, $filename, $uploadId, $tag, $page - 1,
       $filesizeMin, $filesizeMax, $searchType, $license, $copyright,
       $this->restHelper->getUploadDao(), $this->restHelper->getGroupId(),
       $GLOBALS['PG_CONN'], $limit);
