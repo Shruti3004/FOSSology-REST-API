@@ -422,6 +422,47 @@ paths:
                 $ref: '#/components/schemas/Info'
         default:
           $ref: '#/components/responses/defaultResponse'
+    patch:
+      tags:
+      - Upload
+      summary: Update an upload
+      requestBody:
+        description: Information to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Set the properties to be updated
+              properties:
+                name:
+                  description: New name for the upload
+                  type: string
+                  nullable: true
+                  example:
+                    "Updated upload name"
+                description:
+                  description: New description for the upload
+                  type: string
+                  nullable: true
+                  example:
+                    "Updated upload description"
+      parameters:
+        - name: uploadId
+          description: Upload Id, which upload should be modified
+          in: header
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Upload edited successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+        default:
+            $ref: '#/components/responses/defaultResponse'
 
   /uploads/{id}/summary:
     parameters:

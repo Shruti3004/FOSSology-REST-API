@@ -35,6 +35,7 @@ use Fossology\Lib\Dao\AgentDao;
 use Fossology\Lib\Data\UploadStatus;
 use Fossology\Lib\Proxy\ScanJobProxy;
 use Fossology\Lib\Proxy\UploadBrowseProxy;
+use Fossology\Lib\Util\StringOperation;
 
 /**
  * @class UploadController
@@ -297,6 +298,39 @@ class UploadController extends RestController
         InfoType::INFO);
     }
     return $response->withJson($returnVal->getArray(), $returnVal->getCode());
+  }
+
+  /**
+   * Update an upload
+   *
+   * @param Request $request
+   * @param Response $response
+   * @param array $args
+   * @return Response
+   */
+  public function updateUpload($request, $response, $args)
+  {
+    $newParams = $request->getParsedBody();
+    $uploadId = $request->getHeaderLine('uploadId');
+    $newInfo = null;
+    $assocData = [];
+    if (!$uploadId) {
+      $returnVal = new Info(400, "uploadId header is required!",
+        InfoType::ERROR);
+      return $response->withJson($returnVal->getArray(), $returnVal->getCode());
+    }
+    if (array_key_exists('name', $newParams)) {
+      $assocData['upload_filename'] = StringOperation::replaceUnicodeControlChar($newParams['name']);
+    }
+    if (array_key_exists('description', $newParams)) {
+      $assocData['upload_desc'] = StringOperation::replaceUnicodeControlChar($newParams['description']);
+    }
+    $tableName = "upload";
+    $this->dbHelper->getDbManager()->updateTableRow($tableName, $assocData,
+      "upload_pk", $uploadId, __METHOD__ . ".updateUpload");
+    $newInfo = new Info(200, "Upload " . $uploadId .
+      " updated.", InfoType::INFO);
+    return $response->withJson($newInfo->getArray(), $newInfo->getCode());
   }
 
   /**

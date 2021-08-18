@@ -138,6 +138,7 @@ $app->group(VERSION_2 . 'uploads',
     $this->post('', UploadController::class . ':postUpload');
     $this->get('/{id:\\d+}/summary', UploadController::class . ':getUploadSummary');
     $this->get('/{id:\\d+}/licenses', UploadController::class . ':getUploadLicenses');
+    $this->patch('', UploadController::class . ':updateUpload');
     $this->any('/{params:.*}', BadRequestController::class);
   });
 
